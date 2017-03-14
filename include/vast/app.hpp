@@ -5,6 +5,7 @@
 #include <vast/heap.hpp>
 #include <vast/window.hpp>
 #include <vast/renderer.hpp>
+#include <vast/scene.hpp>
 
 // Standard
 #include <string>
@@ -22,6 +23,7 @@ namespace Vast
 		Heap heap;
 		Window window;
 		Renderer renderer;
+		Scene scene;
 
 	public:
 		App(int argc, char* argv[]);

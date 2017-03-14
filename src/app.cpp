@@ -31,6 +31,7 @@ namespace Vast
 		bool initiated = true;
 		initiated &= this->window.open("Vast");
 		initiated &= this->renderer.init();
+		initiated &= this->scene.init();
 
 		// Check for initiation failure
 		if (initiated)
@@ -45,12 +46,17 @@ namespace Vast
 		this->running = true;
 		while (this->running)
 		{
+			// Logic
+			this->scene.handleInput(this->window.getInputState());
+			this->scene.tick();
+
 			// Rendering
 			this->renderer.clear(glm::vec3(1, 1, 1));
+			this->scene.draw(this->renderer);
 			this->window.display();
 
 			// Input
-			this->window.handleInput();
+			this->window.receiveInput();
 			if (!this->window.isOpen())
 			{
 				g_log.write("Window received close event");

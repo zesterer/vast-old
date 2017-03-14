@@ -36,7 +36,7 @@ namespace Vast
 		g_log.write("Switched active OpenGL window context");
 
 		// Input
-		//glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		this->setCursorTrapped(true);
 
 		return true;
 	}
@@ -46,20 +46,25 @@ namespace Vast
 		glfwSwapBuffers(this->window);
 	}
 
-	void Window::handleInput()
+	void Window::receiveInput()
 	{
 		// Poll window events
 		glfwPollEvents();
 
 		// Cursor
-		int width, height;
-		double cursor_x, cursor_y;
-		glfwGetWindowSize(this->window, &width, &height);
-		glfwGetCursorPos(this->window, &cursor_x, &cursor_y);
-		glfwSetCursorPos(this->window, width / 2, height / 2);
+		if (this->cursor_trapped)
+		{
+			int width, height;
+			double cursor_x, cursor_y;
+			glfwGetWindowSize(this->window, &width, &height);
+			glfwGetCursorPos(this->window, &cursor_x, &cursor_y);
+			glfwSetCursorPos(this->window, width / 2, height / 2);
 
-		// Find the amount the cursor has moved since the last reset
-		this->inputstate.setCursorOffset(glm::vec2(cursor_x - width / 2, cursor_y - height / 2));
+			// Find the amount the cursor has moved since the last reset
+			this->inputstate.setCursorOffset(glm::vec2(cursor_x - width / 2, cursor_y - height / 2));
+		}
+		else
+			this->inputstate.setCursorOffset(glm::vec2(0));
 
 		// Update the input state depending on keys
 		this->inputstate.setKeyState(InputState::Key::MOVE_UP    , glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS);
@@ -68,6 +73,16 @@ namespace Vast
 		this->inputstate.setKeyState(InputState::Key::MOVE_RIGHT , glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS);
 		this->inputstate.setKeyState(InputState::Key::MOVE_CROUCH, glfwGetKey(this->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
 		this->inputstate.setKeyState(InputState::Key::MOVE_JUMP  , glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS);
+	}
+
+	void Window::setCursorTrapped(bool trapped)
+	{
+		this->cursor_trapped = trapped;
+
+		if (this->cursor_trapped)
+			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
 	void Window::close()

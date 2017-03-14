@@ -5,11 +5,13 @@ out vec3 pixel_color;
 smooth in vec4 frag_pos;
 smooth in vec4 frag_norm;
 smooth in vec3 frag_col;
+smooth in vec2 frag_uv;
 
 uniform mat4 uni_proj_mat;
 uniform mat4 uni_view_mat;
 uniform mat4 uni_mod_mat;
 uniform vec3 uni_color;
+uniform sampler2D uni_texture;
 
 vec3 sun_direction = normalize(vec3(-1.5, -0.8, -1));
 vec3 sun_color = vec3(1, 1, 1);
@@ -42,7 +44,7 @@ void main()
 	vec3 total_light = ambiant_light + diffuse_light + specular_light;
 
 	// Surface color
-	vec3 surface_color = frag_col * uni_color;
+	vec3 surface_color = texture2D(uni_texture, frag_uv).rgb * frag_col * uni_color;
 
 	// Mist
 	vec3 mist_glow = mist_color * sun_color;
@@ -50,5 +52,5 @@ void main()
 	//mist_val = 0;
 
 	// Final pixel color
-	pixel_color = mix(surface_color * total_light, mist_glow, mist_val);
+	pixel_color = surface_color;//mix(surface_color * total_light, mist_glow, mist_val);
 }

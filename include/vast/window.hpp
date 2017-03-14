@@ -18,14 +18,18 @@ namespace Vast
 	private:
 		GLFWwindow* window = nullptr;
 		InputState inputstate;
+		bool cursor_trapped = false;
 
 	public:
 		bool isOpen() const;
 		const InputState& getInputState() { return this->inputstate; }
+		bool getCursorTrapped() { return this->cursor_trapped; }
+
+		void setCursorTrapped(bool trapped);
 
 		bool open(std::string title);
 		void display();
-		void handleInput();
+		void receiveInput();
 		void close();
 	};
 }
