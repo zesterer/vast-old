@@ -7,9 +7,17 @@
 
 // Standard
 #include <vector>
+#include <string>
+#include <tuple>
 
 namespace Vast
 {
+	enum class VertexFormat
+	{
+		POS_COL_NORM,
+		POS_COL_UV_NORM,
+	};
+
 	struct Vertex
 	{
 		glm::vec3 pos;
@@ -39,6 +47,16 @@ namespace Vast
 			this->v0 = v0;
 			this->v1 = v1;
 			this->v2 = v2;
+		}
+
+		void normalize()
+		{
+			glm::vec3 n = glm::cross(this->v1.pos - this->v0.pos, this->v2.pos - this->v0.pos);
+			glm::normalize(n);
+
+			this->v0.norm = n;
+			this->v1.norm = n;
+			this->v2.norm = n;
 		}
 	};
 
@@ -71,10 +89,11 @@ namespace Vast
 		}
 	};
 
-	struct Mesh
+	class Mesh
 	{
 		std::vector<Polygon> polygons;
 
+	public:
 		void clear()
 		{
 			this->polygons.clear();
@@ -91,52 +110,29 @@ namespace Vast
 			this->polygons.push_back(quad.p1);
 		}
 
-		const gl::GLfloat* getVertexArray()
+		long getVertexCount() const
 		{
-			return (const gl::GLfloat*)&this->polygons[0];
+			return this->polygons.size() * 3;
 		}
 
-		/*
-		std::vector<gl::GLfloat> getVertexArray()
-		{
-			std::vector<gl::GLfloat> array;
+		std::vector<gl::GLfloat> getVertexArray(VertexFormat format = VertexFormat::POS_COL_UV_NORM) const;
 
-			for (Polygon p : this->polygons)
-			{
-				array.push_back(p.v0.pos.x);
-				array.push_back(p.v0.pos.y);
-				array.push_back(p.v0.pos.z);
-				array.push_back(p.v0.col.r);
-				array.push_back(p.v0.col.g);
-				array.push_back(p.v0.col.b);
-				array.push_back(p.v0.norm.x);
-				array.push_back(p.v0.norm.y);
-				array.push_back(p.v0.norm.z);
+		bool load(std::string filename);
+	};
 
-				array.push_back(p.v1.pos.x);
-				array.push_back(p.v1.pos.y);
-				array.push_back(p.v1.pos.z);
-				array.push_back(p.v1.col.r);
-				array.push_back(p.v1.col.g);
-				array.push_back(p.v1.col.b);
-				array.push_back(p.v1.norm.x);
-				array.push_back(p.v1.norm.y);
-				array.push_back(p.v1.norm.z);
+	class OBJModel
+	{
+	private:
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::vec3> normals;
+		std::vector<glm::vec3> uvs;
+		std::vector<std::tuple<glm::ivec3, glm::ivec3, glm::ivec3>> polygons;
 
-				array.push_back(p.v2.pos.x);
-				array.push_back(p.v2.pos.y);
-				array.push_back(p.v2.pos.z);
-				array.push_back(p.v2.col.r);
-				array.push_back(p.v2.col.g);
-				array.push_back(p.v2.col.b);
-				array.push_back(p.v2.norm.x);
-				array.push_back(p.v2.norm.y);
-				array.push_back(p.v2.norm.z);
-			}
+	public:
+		Polygon getPolygon(long i) const;
+		long getPolygonCount() const { return this->polygons.size(); }
 
-			return array;
-		}
-		*/
+		void parseLine(std::string line);
 	};
 }
 

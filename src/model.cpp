@@ -91,6 +91,6 @@ namespace Vast
 
 	bool Model::load(const Mesh& mesh)
 	{
-		return this->load((const gl::GLfloat*)&mesh.polygons[0], sizeof(Vertex), mesh.polygons.size() * 3, VertexFormat::POS_COL_UV_NORM);
+		return this->load((const gl::GLfloat*)&mesh.getVertexArray()[0], sizeof(Vertex), mesh.getVertexCount(), VertexFormat::POS_COL_UV_NORM);
 	}
 }

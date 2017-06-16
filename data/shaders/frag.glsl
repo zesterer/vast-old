@@ -13,15 +13,14 @@ uniform mat4 uni_mod_mat;
 uniform vec3 uni_color;
 uniform sampler2D uni_texture;
 
-vec3 sun_direction = normalize(vec3(-1.5, -0.8, -1));
-vec3 sun_color = vec3(1, 1, 1);
+vec3  sun_direction = normalize(vec3(-1.5, -0.8, -1));
+vec3  sun_color     = vec3(1, 1, 1);
+float sun_factor    = 50;
+float sun_shine     = 0;
 
 vec3 mist_color = vec3(0.7, 0.7, 1);
 float mist_start = 450;
 float mist_depth = 50;
-
-float specular_power = 50;
-float specular_shine = 0;
 
 void main()
 {
@@ -36,9 +35,9 @@ void main()
 	vec3 diffuse_light = 0.5 * sun_color * max(0, dot(world_norm, -normalize(sun_direction)));
 
 	// Specular light
-	vec3 reflect_vec = (uni_view_mat * vec4(reflect(sun_direction, world_norm), 0)).xyz;
-	float specular_val = clamp(dot(-normalize(cam_pos), reflect_vec) - specular_shine, 0, 1);
-	vec3 specular_light = sun_color * pow(specular_val, specular_power);
+	vec3  reflect_vec = (uni_view_mat * vec4(reflect(sun_direction, world_norm), 0)).xyz;
+	float specular_val = clamp(dot(-normalize(cam_pos), reflect_vec) + sun_shine, 0, 1);
+	vec3  specular_light = sun_color * pow(specular_val, sun_factor);
 
 	// Total light
 	vec3 total_light = ambiant_light + diffuse_light + specular_light;
@@ -52,5 +51,5 @@ void main()
 	//mist_val = 0;
 
 	// Final pixel color
-	pixel_color = surface_color;//mix(surface_color * total_light, mist_glow, mist_val);
+	pixel_color = mix(surface_color * total_light, mist_glow, mist_val);
 }

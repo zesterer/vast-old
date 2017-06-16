@@ -21,6 +21,7 @@ namespace Vast
 		glm::ivec2 getSize() const { return this->size; }
 		const unsigned char* getData() const { return this->data; }
 
+		Image(std::string filename) { this->load(filename); }
 		~Image();
 		void unload();
 		bool load(std::string filename);

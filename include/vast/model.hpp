@@ -11,13 +11,6 @@ namespace Vast
 {
 	class Model
 	{
-	public:
-		enum class VertexFormat
-		{
-			POS_COL_NORM,
-			POS_COL_UV_NORM,
-		};
-
 	private:
 		gl::GLuint vert_buff_id;
 		gl::GLuint vert_arr_id;

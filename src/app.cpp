@@ -51,7 +51,7 @@ namespace Vast
 			this->scene.tick();
 
 			// Rendering
-			this->renderer.clear(glm::vec3(1, 1, 1));
+			this->renderer.clear(glm::vec3(0, 0, 0.05));
 			this->scene.draw(this->renderer);
 			this->window.display();
 

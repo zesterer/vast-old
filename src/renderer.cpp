@@ -6,6 +6,9 @@
 #include <glbinding/Binding.h>
 #include <glbinding/gl/gl.h>
 
+// Standard
+#include <iostream>
+
 namespace Vast
 {
 	bool Renderer::init()
@@ -15,6 +18,7 @@ namespace Vast
 
 		// Load shaders
 		this->shader.loadFiles("data/shaders/vert.glsl", "data/shaders/frag.glsl");
+		std::cout << "Program ID = " << this->shader.getProgramID() << std::endl;
 		gl::glUseProgram(this->shader.getProgramID());
 
 		// Enable GL features

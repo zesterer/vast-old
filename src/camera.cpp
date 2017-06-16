@@ -8,7 +8,7 @@ namespace Vast
 {
 	void Camera::tick(Scene& scene)
 	{
-		this->proj_mat = glm::perspective(glm::radians(45.0f), (float)1200 / (float)800, 0.1f, 10000000.0f);
+		this->proj_mat = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10000000.0f);
 
 		this->view_mat = glm::mat4(1.0f);//glm::lookAt(this->pos, glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
 

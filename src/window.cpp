@@ -19,7 +19,7 @@ namespace Vast
 		}
 
 			// Create the window
-		this->window = glfwCreateWindow(640, 480, title.c_str(), NULL, NULL);
+		this->window = glfwCreateWindow(800, 600, title.c_str(), NULL, NULL);
 
 		// Check the window opened properly
 		if (this->window == nullptr)
