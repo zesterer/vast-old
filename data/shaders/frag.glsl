@@ -18,7 +18,7 @@ vec3  sun_color     = vec3(1, 1, 1);
 float sun_factor    = 50;
 float sun_shine     = 0;
 
-vec3 mist_color = vec3(0.7, 0.7, 1);
+vec3  mist_color = vec3(0.7, 0.7, 1);
 float mist_start = 450;
 float mist_depth = 50;
 
