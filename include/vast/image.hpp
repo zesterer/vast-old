@@ -1,6 +1,9 @@
 #ifndef VAST_IMAGE_HPP
 #define VAST_IMAGE_HPP
 
+// Vast
+#include <vast/resource.hpp>
+
 // Library
 #include <glm/glm.hpp>
 
@@ -9,7 +12,7 @@
 
 namespace Vast
 {
-	class Image
+	class Image : public Resource
 	{
 	private:
 		unsigned char* data = nullptr;

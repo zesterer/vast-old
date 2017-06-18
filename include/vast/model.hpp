@@ -1,7 +1,8 @@
 #ifndef VAST_MODEL_HPP
 #define VAST_MODEL_HPP
 
-// IronMoor
+// Vast
+#include <vast/resource.hpp>
 #include <vast/mesh.hpp>
 
 // Library
@@ -9,7 +10,7 @@
 
 namespace Vast
 {
-	class Model
+	class Model : public Resource
 	{
 	private:
 		gl::GLuint vert_buff_id;
@@ -26,6 +27,8 @@ namespace Vast
 		VertexFormat getVertexFormat() { return this->vert_format; }
 		bool getBuffered() { return this->buffered; }
 
+		Model() {}
+		Model(const Mesh& mesh) { this->load(mesh); }
 		~Model();
 		bool init();
 		void unload();

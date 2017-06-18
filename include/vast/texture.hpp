@@ -2,6 +2,7 @@
 #define VAST_TEXTURE_HPP
 
 // Vast
+#include <vast/resource.hpp>
 #include <vast/image.hpp>
 
 // Library
@@ -10,7 +11,7 @@
 
 namespace Vast
 {
-	class Texture
+	class Texture : public Resource
 	{
 	private:
 		gl::GLuint texture_id;
@@ -25,6 +26,8 @@ namespace Vast
 		gl::GLenum getFormat() const { return this->format; }
 		glm::ivec2 getSize() const { return this->size; }
 
+		Texture() {}
+		Texture(const Image& image) { this->load(image); }
 		~Texture();
 		bool init();
 		void unload();

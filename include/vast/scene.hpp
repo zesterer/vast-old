@@ -2,30 +2,34 @@
 #define VAST_SCENE_HPP
 
 // Vast
-#include <vast/heap.hpp>
 #include <vast/camera.hpp>
 #include <vast/renderer.hpp>
 #include <vast/inputstate.hpp>
+#include <vast/entity.hpp>
 
 // Library
 #include <glm/glm.hpp>
+
+// Standard
+#include <vector>
+#include <memory>
 
 namespace Vast
 {
 	class Scene
 	{
 	private:
-		Heap* heap = nullptr;
-
 		Camera camera;
+		std::vector<std::shared_ptr<Entity>> entities;
 
 	public:
 		const Camera& getCamera() const { return this->camera; }
 
-		bool init(Heap& heap);
+		bool init();
 		void tick();
 		void handleInput(const InputState& inputstate);
 		void draw(Renderer& renderer);
+		void drawEntity(Renderer& renderer, const Entity& entity);
 	};
 }
 

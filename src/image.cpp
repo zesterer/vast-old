@@ -17,7 +17,11 @@ namespace Vast
 		if (this->loaded)
 		{
 			if (this->data != nullptr)
+			{
 				free(this->data);
+				this->data = nullptr;
+			}
+
 			this->loaded = false;
 		}
 	}

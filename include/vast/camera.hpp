@@ -2,7 +2,7 @@
 #define VAST_CAMERA_HPP
 
 // Vast
-//#include <vast/entity.hpp>
+#include <vast/resource.hpp>
 
 // Library
 #include <glm/glm.hpp>
@@ -11,7 +11,7 @@ namespace Vast
 {
 	class Scene;
 
-	class Camera
+	class Camera : public Resource
 	{
 	public:
 		glm::vec3 pos;

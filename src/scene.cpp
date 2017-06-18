@@ -1,6 +1,7 @@
 // Vast
 #include <vast/scene.hpp>
 #include <vast/log.hpp>
+#include <vast/heap.hpp>
 
 #include <vast/mesh.hpp>
 #include <vast/image.hpp>
@@ -8,37 +9,45 @@
 #include <vast/cubemap.hpp>
 #include <vast/model.hpp>
 
-#include <vast/entity.hpp>
-
 // Library
 #include <glm/glm.hpp>
 
 namespace Vast
 {
-	Shader model_shader(Shader::Type::MODEL);
-	Shader skybox_shader(Shader::Type::SKYBOX);
+	std::shared_ptr<Shader> model_shader;
+	std::shared_ptr<Shader> skybox_shader;
 
-	Model   craft_model;
-	Texture craft_texture;
+	std::shared_ptr<Entity>  craft_entity;
+	std::shared_ptr<Model>   craft_model;
+	std::shared_ptr<Texture> craft_texture;
 
-	CubeMap skybox_cubemap;
-	Model   skybox_model;
+	std::shared_ptr<CubeMap> skybox_cubemap;
+	std::shared_ptr<Model>   skybox_model;
 
-	bool Scene::init(Heap& heap)
+	bool Scene::init()
 	{
-		this->heap = &heap;
+		// Load model shader
+		model_shader = std::make_shared<Shader>(Shader::Type::MODEL);
+		model_shader->loadFiles("data/shaders/vert.glsl", "data/shaders/frag.glsl");
 
-		rid nentity = this->heap->create<Entity>();
-
-		// Load shaders
-		model_shader.loadFiles("data/shaders/vert.glsl", "data/shaders/frag.glsl");
-		skybox_shader.loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
+		// Load Skybox shader
+		skybox_shader = std::make_shared<Shader>(Shader::Type::SKYBOX);
+		skybox_shader->loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
 
 		Mesh craft_mesh("data/obj/craft.obj");
-		craft_model.load(craft_mesh);
+		craft_model = std::make_shared<Model>(craft_mesh);
+
+		Image craft_image("data/gfx/test.png");
+		craft_texture = std::make_shared<Texture>(craft_image);
 
 		Mesh skybox_mesh("data/obj/skybox.obj");
-		skybox_model.load(skybox_mesh);
+		skybox_model = std::make_shared<Model>(skybox_mesh);
+
+		craft_entity = std::make_shared<Entity>();
+		craft_entity->setModel(craft_model);
+		craft_entity->setTexture(craft_texture);
+		craft_entity->setShader(model_shader);
+		this->entities.push_back(craft_entity);
 
 		Image sky_x_pos("data/gfx/skybox/sky_x_pos.png");
 		Image sky_x_neg("data/gfx/skybox/sky_x_neg.png");
@@ -46,7 +55,7 @@ namespace Vast
 		Image sky_y_neg("data/gfx/skybox/sky_y_neg.png");
 		Image sky_z_pos("data/gfx/skybox/sky_z_pos.png");
 		Image sky_z_neg("data/gfx/skybox/sky_z_neg.png");
-		skybox_cubemap.load(
+		skybox_cubemap = std::make_shared<CubeMap>(
 			sky_x_pos,
 			sky_x_neg,
 			sky_y_pos,
@@ -54,9 +63,6 @@ namespace Vast
 			sky_z_pos,
 			sky_z_neg
 		);
-
-		Image craft_image("data/gfx/test.png");
-		craft_texture.load(craft_image);
 
 		g_log.write("Initiated scene");
 
@@ -66,6 +72,9 @@ namespace Vast
 	void Scene::tick()
 	{
 		this->camera.tick(*this);
+
+		for (std::shared_ptr<Entity> entity : this->entities)
+			entity->tick();
 	}
 
 	void Scene::handleInput(const InputState& inputstate)
@@ -90,7 +99,14 @@ namespace Vast
 
 	void Scene::draw(Renderer& renderer)
 	{
-		renderer.renderSkybox(skybox_shader, skybox_model, skybox_cubemap, this->camera.getProjMatrix(), this->camera.getSpinMatrix());
-		renderer.renderModel(model_shader, craft_model, craft_texture, this->camera.getProjMatrix(), this->camera.getViewMatrix(), glm::mat4(1.0f), glm::vec3(1, 1, 1));
+		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera.getProjMatrix(), this->camera.getSpinMatrix());
+
+		for (std::shared_ptr<Entity> entity : this->entities)
+			this->drawEntity(renderer, *entity);
+	}
+
+	void Scene::drawEntity(Renderer& renderer, const Entity& entity)
+	{
+		renderer.renderModel(*entity.getShader(), *entity.getModel(), *entity.getTexture(), this->camera.getProjMatrix(), this->camera.getViewMatrix(), entity.getState().mat, glm::vec3(1, 1, 1));
 	}
 }

@@ -31,7 +31,7 @@ namespace Vast
 		bool initiated = true;
 		initiated &= this->window.open("Vast");
 		initiated &= this->renderer.init();
-		initiated &= this->scene.init(this->heap);
+		initiated &= this->scene.init();
 
 		// Check for initiation failure
 		if (initiated)

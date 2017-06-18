@@ -27,7 +27,7 @@ namespace Vast
 	struct DynamicState : public StaticState
 	{
 		glm::vec3 vel;
-		glm::quat rot;
+		glm::quat rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
 
 		void tick()
 		{
@@ -35,6 +35,8 @@ namespace Vast
 
 			this->pos += this->vel;            // Velocity
 			this->ori = this->rot * this->ori; // Rotation
+
+			this->update();
 		}
 	};
 }

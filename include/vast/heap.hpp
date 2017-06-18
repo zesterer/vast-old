@@ -10,6 +10,19 @@
 
 namespace Vast
 {
+	template <typename T>
+	struct ResourcePair
+	{
+		rid id;
+		std::shared_ptr<T> ptr;
+
+		ResourcePair(rid id, std::shared_ptr<T> ptr)
+		{
+			this->id = id;
+			this->ptr = ptr;
+		}
+	};
+
 	class Heap
 	{
 	private:
@@ -23,19 +36,19 @@ namespace Vast
 
 	public:
 		template <typename T, typename ... Args>
-		rid create(Args ... args)
+		std::shared_ptr<T> create(Args ... args)
 		{
-			std::shared_ptr<T> ptr(new T(args ...));
+			std::shared_ptr<T> ptr = std::make_shared<T>(args ...);
 			rid id = this->generateID();
 			ptr->setID(id);
 			this->items[id] = ptr;
-			return id;
+			return ptr;
 		}
 
 		template <typename T, typename ... Args>
 		std::shared_ptr<T> get(rid id)
 		{
-			return this->items[id];
+			return std::static_pointer_cast<T>(this->items[id]);
 		}
 
 		bool contains(rid id)
@@ -43,6 +56,8 @@ namespace Vast
 			return this->items.find(id) != this->items.end();
 		}
 	};
+
+	extern Heap g_heap;
 }
 
 #endif

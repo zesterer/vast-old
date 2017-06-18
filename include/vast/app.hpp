@@ -20,7 +20,6 @@ namespace Vast
 
 		bool running = false;
 
-		Heap heap;
 		Window window;
 		Renderer renderer;
 		Scene scene;

@@ -1,6 +1,9 @@
 #ifndef VAST_SHADER_HPP
 #define VAST_SHADER_HPP
 
+// Vast
+#include <vast/resource.hpp>
+
 // Library
 #include <glbinding/gl/types.h>
 
@@ -25,7 +28,7 @@ namespace Vast
 		gl::GLuint cubemap;
 	};
 
-	class Shader
+	class Shader : public Resource
 	{
 	public:
 		enum class Type
