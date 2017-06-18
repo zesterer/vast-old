@@ -15,6 +15,9 @@ namespace Vast
 		this->view_mat = glm::rotate(this->view_mat, glm::radians(this->rot.z), glm::vec3(0.0, 0.0, 1.0)); // Roll
 		this->view_mat = glm::rotate(this->view_mat, glm::radians(-90.0f + this->rot.y), glm::vec3(1.0, 0.0, 0.0)); // Pitch
 		this->view_mat = glm::rotate(this->view_mat, glm::radians(90.0f - this->rot.x), glm::vec3(0.0, 0.0, 1.0)); // Yaw
+
+		this->spin_mat = this->view_mat;
+
 		this->view_mat = glm::translate(this->view_mat, -this->pos);
 	}
 

@@ -94,6 +94,12 @@ namespace Vast
 		std::vector<Polygon> polygons;
 
 	public:
+		Mesh() {}
+		Mesh (std::string filename)
+		{
+			this->load(filename);
+		}
+
 		void clear()
 		{
 			this->polygons.clear();

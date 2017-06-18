@@ -53,7 +53,7 @@ namespace Vast
 		gl::glBindBuffer(gl::GL_ARRAY_BUFFER, this->vert_buff_id);
 		gl::glBufferData(gl::GL_ARRAY_BUFFER, vert_size * vert_count, vertices, gl::GL_STATIC_DRAW);
 
-		g_log.write("Buffered vertex data of size '" + std::to_string(vert_size * vert_count) + "' containing '" + std::to_string(vert_count) + "' vertices");
+		g_log.write("Buffered vertex data of size " + std::to_string(vert_size * vert_count) + " containing " + std::to_string(vert_count) + " vertices");
 
 		// Set vertex attributes for the vertex data (position, color, normal, etc.)
 		switch (this->vert_format)

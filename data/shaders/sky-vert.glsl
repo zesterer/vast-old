@@ -6,22 +6,15 @@ in vec3 vert_norm;
 in vec2 vert_uv;
 
 smooth out vec4 frag_pos;
-smooth out vec4 frag_norm;
-smooth out vec3 frag_col;
-smooth out vec2 frag_uv;
 
 uniform mat4 uni_proj_mat;
-uniform mat4 uni_view_mat;
-uniform vec3 uni_cam_pos;
+uniform mat4 uni_spin_mat;
 uniform samplerCube uni_cubemap;
 
 void main()
 {
-	vec4 world_pos = vec4(vert_pos + uni_cam_pos, 1);
-	gl_Position = uni_proj_mat * uni_view_mat * world_pos;
+	vec4 world_pos = vec4(vert_pos, 1);
 
+	gl_Position = uni_proj_mat * uni_spin_mat * world_pos;
 	frag_pos = world_pos;
-	frag_col = vert_col;
-	frag_norm = vec4(vert_norm, 0);
-	frag_uv = vert_uv;
 }

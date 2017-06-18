@@ -6,9 +6,6 @@
 #include <glbinding/Binding.h>
 #include <glbinding/gl/gl.h>
 
-// Standard
-#include <iostream>
-
 namespace Vast
 {
 	bool Renderer::init()
@@ -33,71 +30,63 @@ namespace Vast
 		gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::setShader(const Shader& shader)
+	void Renderer::renderModel(const Shader& shader, const Model& model, const Texture& texture, glm::mat4 proj_mat, glm::mat4 view_mat, glm::mat4 mod_mat, glm::vec3 color)
 	{
-		this->shader = &shader;
-		gl::glUseProgram(this->shader->getProgramID());
-	}
-
-	void Renderer::renderModel(const Model& model, const Texture& texture, glm::mat4 proj_mat, glm::mat4 view_mat, glm::mat4 mod_mat, glm::vec3 color)
-	{
-		if (this->shader == nullptr)
+		if (shader.getType() != Shader::Type::MODEL)
+		{
+			g_log.write("Attempted to render model with inappropriate shader");
 			return;
+		}
 
-		// Uniform IDs
-		gl::GLuint uniform_proj_mat_id = this->shader->getUniformID("uni_proj_mat");
-		gl::GLuint uniform_view_mat_id = this->shader->getUniformID("uni_view_mat");
-		gl::GLuint uniform_mod_mat_id = this->shader->getUniformID("uni_mod_mat");
-		gl::GLuint uniform_color_id = this->shader->getUniformID("uni_color");
-		gl::GLuint uniform_texture_id = this->shader->getUniformID("uni_texture");
+		// Use the shader
+		gl::glUseProgram(shader.getProgramID());
 
-		// Bind the array & buffer and draw it
-		gl::glBindVertexArray(model.getVertexArrayID());
+		// Set uniform values
+		gl::glUniformMatrix4fv(shader.getModelUniforms().proj_mat, 1, gl::GL_FALSE, &proj_mat[0][0]);
+		gl::glUniformMatrix4fv(shader.getModelUniforms().view_mat, 1, gl::GL_FALSE, &view_mat[0][0]);
+		gl::glUniformMatrix4fv(shader.getModelUniforms().mod_mat, 1, gl::GL_FALSE, &mod_mat[0][0]);
+		gl::glUniform3f(shader.getModelUniforms().color, color.r, color.g, color.b);
 
 		// Texture
-		gl::glUniform1i(uniform_texture_id, 0);
+		gl::glUniform1i(shader.getModelUniforms().texture, 0);
 		gl::glActiveTexture(gl::GL_TEXTURE0);
 		gl::glBindTexture(gl::GL_TEXTURE_2D, texture.getTextureID());
 
-		// Set uniform values
-		gl::glUniformMatrix4fv(uniform_proj_mat_id, 1, gl::GL_FALSE, &proj_mat[0][0]);
-		gl::glUniformMatrix4fv(uniform_view_mat_id, 1, gl::GL_FALSE, &view_mat[0][0]);
-		gl::glUniformMatrix4fv(uniform_mod_mat_id, 1, gl::GL_FALSE, &mod_mat[0][0]);
-		gl::glUniform3f(uniform_color_id, color.r, color.g, color.b);
+		// Bind the array & buffer and draw it
+		gl::glBindVertexArray(model.getVertexArrayID());
+		gl::glBindBuffer(gl::GL_ARRAY_BUFFER, model.getVertexBufferID());
 
-		//gl::glBindBuffer(gl::GL_ARRAY_BUFFER, model.getVertexBufferID());
 		gl::glDrawArrays(gl::GL_TRIANGLES, 0, model.getVertexCount());
 	}
 
-	void Renderer::renderCubeMap(const Model& model, const CubeMap& cubemap, glm::mat4 proj_mat, glm::mat4 view_mat, glm::vec3 cam_pos)
+	void Renderer::renderSkybox(const Shader& shader, const Model& model, const CubeMap& cubemap, glm::mat4 proj_mat, glm::mat4 spin_mat)
 	{
-		if (this->shader == nullptr)
+		if (shader.getType() != Shader::Type::SKYBOX)
+		{
+			g_log.write("Attempted to render skybox with inappropriate shader");
 			return;
+		}
 
-		gl::glDepthMask(gl::GL_FALSE);
+		// Use the shader
+		gl::glUseProgram(shader.getProgramID());
 
-		// Uniform IDs
-		gl::GLuint uniform_proj_mat_id = this->shader->getUniformID("uni_proj_mat");
-		gl::GLuint uniform_view_mat_id = this->shader->getUniformID("uni_view_mat");
-		gl::GLuint uniform_cubemap_id = this->shader->getUniformID("uni_cubemap");
-		gl::GLuint uniform_cam_pos_id = this->shader->getUniformID("uni_cam_pos");
-
-		// Bind the array & buffer and draw it
-		gl::glBindVertexArray(model.getVertexArrayID());
+		// Set uniform values
+		gl::glUniformMatrix4fv(shader.getSkyboxUniforms().proj_mat, 1, gl::GL_FALSE, &proj_mat[0][0]);
+		gl::glUniformMatrix4fv(shader.getSkyboxUniforms().spin_mat, 1, gl::GL_FALSE, &spin_mat[0][0]);
 
 		// Texture
-		gl::glUniform1i(uniform_cubemap_id, 0);
+		gl::glUniform1i(shader.getSkyboxUniforms().cubemap, 0);
 		gl::glActiveTexture(gl::GL_TEXTURE0);
 		gl::glBindTexture(gl::GL_TEXTURE_CUBE_MAP, cubemap.getCubeMapID());
 
-		// Set uniform values
-		gl::glUniformMatrix4fv(uniform_proj_mat_id, 1, gl::GL_FALSE, &proj_mat[0][0]);
-		gl::glUniformMatrix4fv(uniform_view_mat_id, 1, gl::GL_FALSE, &view_mat[0][0]);
-		gl::glUniform3f(uniform_cam_pos_id, cam_pos.x, cam_pos.y, cam_pos.z);
+		// Bind the array & buffer and draw it
+		gl::glBindVertexArray(model.getVertexArrayID());
+		gl::glBindBuffer(gl::GL_ARRAY_BUFFER, model.getVertexBufferID());
 
-		//gl::glBindBuffer(gl::GL_ARRAY_BUFFER, model.getVertexBufferID());
+		gl::glDepthMask(gl::GL_FALSE); // Disable depth writing
+
 		gl::glDrawArrays(gl::GL_TRIANGLES, 0, model.getVertexCount());
 
-		gl::glDepthMask(gl::GL_TRUE);
+		gl::glDepthMask(gl::GL_TRUE); // Enable depth writing
 	}
 }

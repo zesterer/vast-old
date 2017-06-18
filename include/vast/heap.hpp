@@ -13,31 +13,32 @@ namespace Vast
 	class Heap
 	{
 	private:
-		std::map<unsigned long, std::shared_ptr<Resource>> items;
-		unsigned long id_counter = 0;
+		std::map<rid, std::shared_ptr<Resource>> items;
+		rid id_counter = 0;
 
-		unsigned long generateID()
+		rid generateID()
 		{
-			this->id_counter ++;
-			return this->id_counter;
+			return ++this->id_counter;
 		}
 
 	public:
 		template <typename T, typename ... Args>
-		std::shared_ptr<T> create(Args ... args)
+		rid create(Args ... args)
 		{
 			std::shared_ptr<T> ptr(new T(args ...));
-			this->items[this->generateID()] = ptr;
-			return ptr;
+			rid id = this->generateID();
+			ptr->setID(id);
+			this->items[id] = ptr;
+			return id;
 		}
 
 		template <typename T, typename ... Args>
-		std::shared_ptr<T> get(unsigned long id)
+		std::shared_ptr<T> get(rid id)
 		{
 			return this->items[id];
 		}
 
-		bool contains(unsigned long id)
+		bool contains(rid id)
 		{
 			return this->items.find(id) != this->items.end();
 		}

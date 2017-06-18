@@ -18,10 +18,6 @@ vec3  sun_color     = vec3(1, 1, 1);
 float sun_factor    = 50;
 float sun_shine     = 0;
 
-vec3  mist_color = vec3(0.7, 0.7, 1);
-float mist_start = 450;
-float mist_depth = 50;
-
 void main()
 {
 	// Geometry
@@ -45,11 +41,6 @@ void main()
 	// Surface color
 	vec3 surface_color = texture2D(uni_texture, frag_uv).rgb * frag_col * uni_color;
 
-	// Mist
-	vec3 mist_glow = mist_color * sun_color;
-	float mist_val = pow(clamp((length(cam_pos) - mist_start) / mist_depth, 0, 1), 1);
-	//mist_val = 0;
-
 	// Final pixel color
-	pixel_color = mix(surface_color * total_light, mist_glow, mist_val);
+	pixel_color = surface_color * total_light;
 }

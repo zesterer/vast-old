@@ -21,12 +21,14 @@ namespace Vast
 	private:
 		glm::mat4 proj_mat;
 		glm::mat4 view_mat;
+		glm::mat4 spin_mat;
 
 	public:
 		glm::vec3 getPosition() const { return this->pos; }
 
 		glm::mat4 getProjMatrix() const { return this->proj_mat; }
 		glm::mat4 getViewMatrix() const { return this->view_mat; }
+		glm::mat4 getSpinMatrix() const { return this->spin_mat; }
 
 		glm::vec3 getLookVector() const;
 

@@ -8,37 +8,37 @@
 #include <vast/cubemap.hpp>
 #include <vast/model.hpp>
 
+#include <vast/entity.hpp>
+
 // Library
 #include <glm/glm.hpp>
 
 namespace Vast
 {
-	Shader std_shader;
-	Shader sky_shader;
+	Shader model_shader(Shader::Type::MODEL);
+	Shader skybox_shader(Shader::Type::SKYBOX);
 
-	Model   model;
-	Texture texture;
+	Model   craft_model;
+	Texture craft_texture;
 
-	CubeMap skymap;
-	Model   skybox;
+	CubeMap skybox_cubemap;
+	Model   skybox_model;
 
-	bool Scene::init()
+	bool Scene::init(Heap& heap)
 	{
+		this->heap = &heap;
+
+		rid nentity = this->heap->create<Entity>();
+
 		// Load shaders
-		std_shader.loadFiles("data/shaders/vert.glsl", "data/shaders/frag.glsl");
-		sky_shader.loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
+		model_shader.loadFiles("data/shaders/vert.glsl", "data/shaders/frag.glsl");
+		skybox_shader.loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
 
-		Mesh mesh;
-		mesh.add(Quad(glm::vec3(-1, -1, 0), glm::vec3(+1, -1, 0), glm::vec3(+1, +1, 0), glm::vec3(-1, +1, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1),
-		glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0), glm::vec2(0, 0)));
-		mesh.load("data/obj/craft.obj");
-		model.load(mesh);
+		Mesh craft_mesh("data/obj/craft.obj");
+		craft_model.load(craft_mesh);
 
-		Mesh skymesh;
-		//skymesh.add(Quad(glm::vec3(-1, -1, 0), glm::vec3(+1, -1, 0), glm::vec3(+1, +1, 0), glm::vec3(-1, +1, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1),
-		//glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0), glm::vec2(0, 0)));
-		skymesh.load("data/obj/skybox.obj");
-		skybox.load(skymesh);
+		Mesh skybox_mesh("data/obj/skybox.obj");
+		skybox_model.load(skybox_mesh);
 
 		Image sky_x_pos("data/gfx/skybox/sky_x_pos.png");
 		Image sky_x_neg("data/gfx/skybox/sky_x_neg.png");
@@ -46,7 +46,7 @@ namespace Vast
 		Image sky_y_neg("data/gfx/skybox/sky_y_neg.png");
 		Image sky_z_pos("data/gfx/skybox/sky_z_pos.png");
 		Image sky_z_neg("data/gfx/skybox/sky_z_neg.png");
-		skymap.load(
+		skybox_cubemap.load(
 			sky_x_pos,
 			sky_x_neg,
 			sky_y_pos,
@@ -55,8 +55,8 @@ namespace Vast
 			sky_z_neg
 		);
 
-		Image image("data/gfx/test.png");
-		texture.load(image);
+		Image craft_image("data/gfx/test.png");
+		craft_texture.load(craft_image);
 
 		g_log.write("Initiated scene");
 
@@ -90,10 +90,7 @@ namespace Vast
 
 	void Scene::draw(Renderer& renderer)
 	{
-		renderer.setShader(sky_shader);
-		renderer.renderCubeMap(skybox, skymap, this->camera.getProjMatrix(), this->camera.getViewMatrix(), this->camera.getPosition());
-
-		renderer.setShader(std_shader);
-		renderer.renderModel(model, texture, this->camera.getProjMatrix(), this->camera.getViewMatrix(), glm::mat4(1.0f), glm::vec3(1, 1, 1));
+		renderer.renderSkybox(skybox_shader, skybox_model, skybox_cubemap, this->camera.getProjMatrix(), this->camera.getSpinMatrix());
+		renderer.renderModel(model_shader, craft_model, craft_texture, this->camera.getProjMatrix(), this->camera.getViewMatrix(), glm::mat4(1.0f), glm::vec3(1, 1, 1));
 	}
 }

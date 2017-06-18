@@ -96,7 +96,36 @@ namespace Vast
 		gl::glAttachShader(this->program_id, this->frag_shader_id);
 		gl::glLinkProgram(this->program_id);
 
+		this->updateUniforms();
+
 		return true;
+	}
+
+	void Shader::updateUniforms()
+	{
+		switch (this->type)
+		{
+		case Shader::Type::MODEL:
+			{
+				this->uniforms_model.proj_mat = this->getUniformID("uni_proj_mat");
+				this->uniforms_model.view_mat = this->getUniformID("uni_view_mat");
+				this->uniforms_model.mod_mat = this->getUniformID("uni_mod_mat");
+				this->uniforms_model.color = this->getUniformID("uni_color");
+				this->uniforms_model.texture = this->getUniformID("uni_texture");
+			}
+			break;
+
+		case Shader::Type::SKYBOX:
+			{
+				this->uniforms_skybox.proj_mat = this->getUniformID("uni_proj_mat");
+				this->uniforms_skybox.spin_mat = this->getUniformID("uni_spin_mat");
+				this->uniforms_skybox.cubemap = this->getUniformID("uni_cubemap");
+			}
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	gl::GLuint Shader::getUniformID(std::string identifier) const

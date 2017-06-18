@@ -3,20 +3,22 @@
 
 namespace Vast
 {
+	typedef unsigned long rid;
+
 	class Heap;
 
 	class Resource
 	{
 		friend class Heap;
 	private:
-		unsigned long id;
+		rid id;
 
 	protected:
-		void setID(unsigned long id) { this->id = id; }
+		void setID(rid id) { this->id = id; }
 
 	public:
 
-		unsigned long getID() { return this->id; }
+		rid getID() { return this->id; }
 	};
 }
 
