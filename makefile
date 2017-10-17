@@ -23,7 +23,8 @@
 
 EXEC_NAME = vast
 
-BUILD_TYPE = release
+# Build type : 'release' or 'debug'
+BUILD_TYPE = debug
 
 SRC_ROOT = $(abspath .)
 TGT_ROOT ?= $(SRC_ROOT)/build
@@ -60,10 +61,9 @@ CPP_FLAGS += $(addprefix -I, $(INC_DIRS))
 CPP_FLAGS += -std=c++14 -Wall -Wextra
 ifeq ($(BUILD_TYPE), release)
 	CPP_FLAGS += -O3
-	CPP_FLAGS += -DPROJECT_DEBUG=0
 else ifeq ($(BUILD_TYPE), debug)
 	CPP_FLAGS += -g -fsanitize=address
-	CPP_FLAGS += -DPROJECT_DEBUG=1
+	CPP_FLAGS += -DDEBUG_BUILD
 endif
 
 # Link Flags

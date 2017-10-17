@@ -20,7 +20,9 @@ namespace Vast
 
 		this->logs.push_back(log_entry);
 
-		if (mode != Mode::DEBUG || PROJECT_DEBUG)
+		#ifndef DEBUG_BUILD
+			if (mode != Mode::DEBUG)
+		#endif
 		{
 			if (this == &g_log) // Are we the global log?
 				std::cout << log_entry << std::endl;

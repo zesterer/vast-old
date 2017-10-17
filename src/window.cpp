@@ -2,6 +2,9 @@
 #include <vast/window.hpp>
 #include <vast/log.hpp>
 
+// Library
+#include <glbinding/gl/gl.h>
+
 namespace Vast
 {
 	bool Window::isOpen() const
@@ -18,7 +21,13 @@ namespace Vast
 			return false;
 		}
 
-			// Create the window
+		// Set OpenGL window hint for OpenGL version
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, (int)gl::GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		// Create the window
 		this->window = glfwCreateWindow(800, 600, title.c_str(), NULL, NULL);
 
 		// Check the window opened properly
@@ -31,9 +40,23 @@ namespace Vast
 		else
 			g_log.write("Window with title '" + title + "' opened");
 
+		// Find window OpenGL context version
+		int vmaj = glfwGetWindowAttrib(this->window, GLFW_CONTEXT_VERSION_MAJOR);
+		int vmin = glfwGetWindowAttrib(this->window, GLFW_CONTEXT_VERSION_MAJOR);
+		int vrev = glfwGetWindowAttrib(this->window, GLFW_CONTEXT_VERSION_MAJOR);
+		int vcore = glfwGetWindowAttrib(this->window, GLFW_OPENGL_PROFILE);
+
+		g_log.write(
+			std::string("OpenGL context version is '") +
+			((vcore == GLFW_OPENGL_CORE_PROFILE) ? "Core" : "Compatible") + " " +
+			std::to_string(vmaj) + "." +
+			std::to_string(vmin) + "." +
+			std::to_string(vrev) + "'"
+		);
+
 		// Set the current OpenGL context to this window's context
 		glfwMakeContextCurrent(this->window);
-		g_log.write("Switched active OpenGL window context");
+		g_log.write("Activated OpenGL window context");
 
 		// Input
 		this->setCursorTrapped(true);
