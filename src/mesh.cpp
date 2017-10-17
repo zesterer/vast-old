@@ -11,7 +11,7 @@
 
 namespace Vast
 {
-	std::vector<gl::GLfloat> Mesh::getVertexArray(VertexFormat format) const
+	std::vector<gl::GLfloat> Mesh::getVertexArray(Vertex::Format format) const
 	{
 		std::vector<gl::GLfloat> array;
 
@@ -26,8 +26,12 @@ namespace Vast
 			array.push_back(p.v0.norm.x);
 			array.push_back(p.v0.norm.y);
 			array.push_back(p.v0.norm.z);
-			array.push_back(p.v0.uv.x);
-			array.push_back(p.v0.uv.y);
+
+			if (format == Vertex::Format::POS_COL_NORM_UV)
+			{
+				array.push_back(p.v0.uv.x);
+				array.push_back(p.v0.uv.y);
+			}
 
 			array.push_back(p.v1.pos.x);
 			array.push_back(p.v1.pos.y);
@@ -38,8 +42,12 @@ namespace Vast
 			array.push_back(p.v1.norm.x);
 			array.push_back(p.v1.norm.y);
 			array.push_back(p.v1.norm.z);
-			array.push_back(p.v1.uv.x);
-			array.push_back(p.v1.uv.y);
+
+			if (format == Vertex::Format::POS_COL_NORM_UV)
+			{
+				array.push_back(p.v1.uv.x);
+				array.push_back(p.v1.uv.y);
+			}
 
 			array.push_back(p.v2.pos.x);
 			array.push_back(p.v2.pos.y);
@@ -50,8 +58,12 @@ namespace Vast
 			array.push_back(p.v2.norm.x);
 			array.push_back(p.v2.norm.y);
 			array.push_back(p.v2.norm.z);
-			array.push_back(p.v2.uv.x);
-			array.push_back(p.v2.uv.y);
+
+			if (format == Vertex::Format::POS_COL_NORM_UV)
+			{
+				array.push_back(p.v2.uv.x);
+				array.push_back(p.v2.uv.y);
+			}
 		}
 
 		return array;

@@ -12,14 +12,14 @@
 
 namespace Vast
 {
-	enum class VertexFormat
-	{
-		POS_COL_NORM,
-		POS_COL_UV_NORM,
-	};
-
 	struct Vertex
 	{
+		enum class Format
+		{
+			POS_COL_NORM,
+			POS_COL_NORM_UV,
+		};
+
 		glm::vec3 pos;
 		glm::vec3 col;
 		glm::vec3 norm;
@@ -121,7 +121,7 @@ namespace Vast
 			return this->polygons.size() * 3;
 		}
 
-		std::vector<gl::GLfloat> getVertexArray(VertexFormat format = VertexFormat::POS_COL_UV_NORM) const;
+		std::vector<gl::GLfloat> getVertexArray(Vertex::Format format = Vertex::Format::POS_COL_NORM_UV) const;
 
 		bool load(std::string filename);
 	};

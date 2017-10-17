@@ -39,7 +39,7 @@ namespace Vast
 		this->initiated = false;
 	}
 
-	bool Model::load(const gl::GLfloat* vertices, size_t vert_size, unsigned long vert_count, VertexFormat vert_format)
+	bool Model::load(const gl::GLfloat* vertices, size_t vert_size, unsigned long vert_count, Vertex::Format vert_format)
 	{
 		this->init();
 
@@ -58,7 +58,7 @@ namespace Vast
 		// Set vertex attributes for the vertex data (position, color, normal, etc.)
 		switch (this->vert_format)
 		{
-		case VertexFormat::POS_COL_UV_NORM:
+		case Vertex::Format::POS_COL_NORM_UV:
 			{
 				gl::glEnableVertexAttribArray(0); // Position
 				gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, vert_size, (void*)0);
@@ -72,7 +72,7 @@ namespace Vast
 			break;
 
 		default:
-		case VertexFormat::POS_COL_NORM:
+		case Vertex::Format::POS_COL_NORM:
 			{
 				gl::glEnableVertexAttribArray(0); // Position
 				gl::glVertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, vert_size, (void*)0);
@@ -91,6 +91,6 @@ namespace Vast
 
 	bool Model::load(const Mesh& mesh)
 	{
-		return this->load((const gl::GLfloat*)&mesh.getVertexArray()[0], sizeof(Vertex), mesh.getVertexCount(), VertexFormat::POS_COL_UV_NORM);
+		return this->load((const gl::GLfloat*)&mesh.getVertexArray()[0], sizeof(Vertex), mesh.getVertexCount(), Vertex::Format::POS_COL_NORM_UV);
 	}
 }

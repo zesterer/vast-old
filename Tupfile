@@ -1,3 +1,0 @@
-include_rules
-
-: src/*.o |> !LINKER_CPP |> $(PROJECT_EXEC_NAME)
