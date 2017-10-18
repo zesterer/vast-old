@@ -11,7 +11,7 @@ uniform samplerCube uni_cubemap;
 void main()
 {
 	// Surface color
-	vec3 surface_color = texture(uni_cubemap, normalize(frag_pos.xyz)).rgb;
+	vec3 surface_color = texture(uni_cubemap, frag_pos.xyz).rgb;
 
 	// Final pixel color
 	pixel_color = surface_color;

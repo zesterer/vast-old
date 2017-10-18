@@ -15,28 +15,31 @@ namespace Vast
 
 		glm::mat4 mat;
 
-		void update()
+		void updateRelativeTo(glm::mat4 mat)
 		{
 			glm::normalize(this->ori); // Normalize quaternions
 
-			this->mat = glm::translate(glm::mat4(1), this->pos); // Position
-			this->mat *= glm::toMat4(this->ori);                 // Orientation
+			this->mat = glm::translate(mat, this->pos); // Position
+			this->mat *= glm::toMat4(this->ori);        // Orientation
+		}
+
+		void update()
+		{
+			this->updateRelativeTo(glm::mat4(1));
 		}
 	};
 
-	struct DynamicState : public StaticState
+	struct DynamicState
 	{
 		glm::vec3 vel;
 		glm::quat rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
 
-		void tick()
+		void tick(StaticState& state)
 		{
 			glm::normalize(this->rot); // Normalize quaternions
 
-			this->pos += this->vel;            // Velocity
-			this->ori = this->rot * this->ori; // Rotation
-
-			this->update();
+			state.pos += this->vel;            // Velocity
+			state.ori = this->rot * state.ori; // Rotation
 		}
 	};
 }

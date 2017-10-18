@@ -3,6 +3,7 @@
 
 // Vast
 #include <vast/resource.hpp>
+#include <vast/sceneobject.hpp>
 
 // Library
 #include <glm/glm.hpp>
@@ -11,28 +12,23 @@ namespace Vast
 {
 	class Scene;
 
-	class Camera : public Resource
+	class Camera : public Resource, public SceneObject
 	{
-	public:
-		glm::vec3 pos;
-		glm::vec3 rot;
-		glm::vec3 scale = glm::vec3(1, 1, 1);
-
 	private:
 		glm::mat4 proj_mat;
 		glm::mat4 view_mat;
 		glm::mat4 spin_mat;
 
-	public:
-		glm::vec3 getPosition() const { return this->pos; }
+	protected:
+		void tick_handler(SceneObject& parent) override;
+		void update_handler(SceneObject& parent) override;
 
+	public:
 		glm::mat4 getProjMatrix() const { return this->proj_mat; }
 		glm::mat4 getViewMatrix() const { return this->view_mat; }
 		glm::mat4 getSpinMatrix() const { return this->spin_mat; }
 
 		glm::vec3 getLookVector() const;
-
-		void tick(Scene& scene);
 	};
 }
 

@@ -44,10 +44,13 @@ namespace Vast
 		skybox_model = std::make_shared<Model>(skybox_mesh);
 
 		craft_entity = std::make_shared<Entity>();
+		this->root.addChild(craft_entity);
 		craft_entity->setModel(craft_model);
 		craft_entity->setTexture(craft_texture);
 		craft_entity->setShader(model_shader);
 		this->entities.push_back(craft_entity);
+
+		craft_entity->addChild(this->camera);
 
 		Image sky_x_pos("data/gfx/skybox/sky_x_pos.png");
 		Image sky_x_neg("data/gfx/skybox/sky_x_neg.png");
@@ -71,35 +74,33 @@ namespace Vast
 
 	void Scene::tick()
 	{
-		this->camera.tick(*this);
-
-		for (std::shared_ptr<Entity> entity : this->entities)
-			entity->tick();
+		this->root.tickChildren();
+		this->root.updateChildren();
 	}
 
 	void Scene::handleInput(const InputState& inputstate)
 	{
-		this->camera.rot.x = this->camera.rot.x - inputstate.getCursorOffset().x * 0.1f;
-		this->camera.rot.y = glm::max(-90.0f, glm::min(90.0f, this->camera.rot.y + inputstate.getCursorOffset().y * 0.1f));
+		this->camera->state.ori.x = this->camera->state.ori.x - inputstate.getCursorOffset().x * 0.1f;
+		this->camera->state.ori.y = glm::max(-90.0f, glm::min(90.0f, this->camera->state.ori.y + inputstate.getCursorOffset().y * 0.1f));
 
 		float speed = 0.25f;
 		if (inputstate.getKeyState(InputState::Key::MOVE_UP))
-			this->camera.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera.rot.x)), speed * glm::sin(glm::radians(this->camera.rot.x)), 0);
+			this->camera->state.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera->state.ori.x)), speed * glm::sin(glm::radians(this->camera->state.ori.x)), 0);
 		if (inputstate.getKeyState(InputState::Key::MOVE_LEFT))
-			this->camera.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera.rot.x + 90.0f)), speed * glm::sin(glm::radians(this->camera.rot.x + 90.0f)), 0);
+			this->camera->state.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera->state.ori.x + 90.0f)), speed * glm::sin(glm::radians(this->camera->state.ori.x + 90.0f)), 0);
 		if (inputstate.getKeyState(InputState::Key::MOVE_DOWN))
-			this->camera.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera.rot.x + 180.0f)), speed * glm::sin(glm::radians(this->camera.rot.x + 180.0f)), 0);
+			this->camera->state.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera->state.ori.x + 180.0f)), speed * glm::sin(glm::radians(this->camera->state.ori.x + 180.0f)), 0);
 		if (inputstate.getKeyState(InputState::Key::MOVE_RIGHT))
-			this->camera.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera.rot.x - 90.0f)), speed * glm::sin(glm::radians(this->camera.rot.x - 90.0f)), 0);
+			this->camera->state.pos += glm::vec3(speed * glm::cos(glm::radians(this->camera->state.ori.x - 90.0f)), speed * glm::sin(glm::radians(this->camera->state.ori.x - 90.0f)), 0);
 		if (inputstate.getKeyState(InputState::Key::MOVE_CROUCH))
-			this->camera.pos.z -= speed;
+			this->camera->state.pos.z -= speed;
 		if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
-			this->camera.pos.z += speed;
+			this->camera->state.pos.z += speed;
 	}
 
 	void Scene::draw(Renderer& renderer)
 	{
-		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera.getProjMatrix(), this->camera.getSpinMatrix());
+		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera->getProjMatrix(), this->camera->getSpinMatrix());
 
 		for (std::shared_ptr<Entity> entity : this->entities)
 			this->drawEntity(renderer, *entity);
@@ -107,6 +108,6 @@ namespace Vast
 
 	void Scene::drawEntity(Renderer& renderer, const Entity& entity)
 	{
-		renderer.renderModel(*entity.getShader(), *entity.getModel(), *entity.getTexture(), this->camera.getProjMatrix(), this->camera.getViewMatrix(), entity.getState().mat, glm::vec3(1, 1, 1));
+		renderer.renderModel(*entity.getShader(), *entity.getModel(), *entity.getTexture(), this->camera->getProjMatrix(), this->camera->getViewMatrix(), entity.state.mat, glm::vec3(1, 1, 1));
 	}
 }
