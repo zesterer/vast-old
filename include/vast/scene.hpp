@@ -21,9 +21,9 @@ namespace Vast
 	{
 	private:
 		std::shared_ptr<Camera> camera = std::make_shared<Camera>();
-		std::vector<std::shared_ptr<Entity>> entities;
 
 		SceneObject root;
+		std::vector<std::shared_ptr<Entity>> entities;
 
 	public:
 		const std::shared_ptr<Camera> getCamera() const { return this->camera; }

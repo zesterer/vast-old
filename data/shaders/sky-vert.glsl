@@ -13,8 +13,6 @@ uniform samplerCube uni_cubemap;
 
 void main()
 {
-	vec4 world_pos = vec4(vert_pos, 1);
-
-	gl_Position = uni_proj_mat * uni_spin_mat * world_pos;
-	frag_pos = world_pos;
+	gl_Position = uni_proj_mat * uni_spin_mat * vec4(vert_pos, 1);
+	frag_pos = vec4(vert_pos, 0);
 }

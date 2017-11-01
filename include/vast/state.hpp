@@ -13,12 +13,13 @@ namespace Vast
 		glm::vec3 pos;
 		glm::quat ori;
 
+		glm::vec3 vel;
+		glm::quat rot;
+
 		glm::mat4 mat;
 
 		void updateRelativeTo(glm::mat4 mat)
 		{
-			glm::normalize(this->ori); // Normalize quaternions
-
 			this->mat = glm::translate(mat, this->pos); // Position
 			this->mat *= glm::toMat4(this->ori);        // Orientation
 		}
@@ -27,19 +28,14 @@ namespace Vast
 		{
 			this->updateRelativeTo(glm::mat4(1));
 		}
-	};
 
-	struct DynamicState
-	{
-		glm::vec3 vel;
-		glm::quat rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
-
-		void tick(StaticState& state)
+		void tick()
 		{
-			glm::normalize(this->rot); // Normalize quaternions
+			this->pos += this->vel;            // Velocity
+			this->ori = this->rot * this->ori; // Rotation
 
-			state.pos += this->vel;            // Velocity
-			state.ori = this->rot * state.ori; // Rotation
+			glm::normalize(this->rot);
+			glm::normalize(this->ori);
 		}
 	};
 }

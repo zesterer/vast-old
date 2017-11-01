@@ -90,12 +90,20 @@ namespace Vast
 			this->inputstate.setCursorOffset(glm::vec2(0));
 
 		// Update the input state depending on keys
-		this->inputstate.setKeyState(InputState::Key::MOVE_UP    , glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS);
-		this->inputstate.setKeyState(InputState::Key::MOVE_LEFT  , glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS);
-		this->inputstate.setKeyState(InputState::Key::MOVE_DOWN  , glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS);
-		this->inputstate.setKeyState(InputState::Key::MOVE_RIGHT , glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_UP    , glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_LEFT  , glfwGetKey(this->window, GLFW_KEY_LEFT) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_DOWN  , glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_RIGHT , glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+
 		this->inputstate.setKeyState(InputState::Key::MOVE_CROUCH, glfwGetKey(this->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
 		this->inputstate.setKeyState(InputState::Key::MOVE_JUMP  , glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS);
+
+		this->inputstate.setKeyState(InputState::Key::MOVE_SFORWARD , glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_SLEFT    , glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_SBACKWARD, glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_SRIGHT   , glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_SCCW     , glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS);
+		this->inputstate.setKeyState(InputState::Key::MOVE_SCW      , glfwGetKey(this->window, GLFW_KEY_E) == GLFW_PRESS);
 	}
 
 	void Window::setCursorTrapped(bool trapped)

@@ -12,6 +12,8 @@ namespace Vast
 
 	void Log::write(std::string msg, Mode mode)
 	{
+		(void)mode;
+		
 		char buff[128];
 		std::time_t now = std::time(nullptr);
 		std::strftime(buff, sizeof(buff), "%H:%M:%S", std::localtime(&now));

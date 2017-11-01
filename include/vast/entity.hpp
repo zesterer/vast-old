@@ -17,8 +17,6 @@ namespace Vast
 	class Entity : public Resource, public SceneObject
 	{
 	private:
-		DynamicState dynamic_state;
-
 		std::shared_ptr<Model>   model;
 		std::shared_ptr<Shader>  shader;
 		std::shared_ptr<Texture> texture;
@@ -28,7 +26,7 @@ namespace Vast
 		{
 			(void)parent;
 
-			this->dynamic_state.tick(this->state);
+			this->state.tick();
 		}
 
 		void update_handler(SceneObject& parent) override
@@ -37,8 +35,6 @@ namespace Vast
 		}
 
 	public:
-		const DynamicState& getDynamicState() const { return this->dynamic_state; }
-
 		std::shared_ptr<Model> getModel() const     { return this->model; }
 		std::shared_ptr<Shader> getShader() const   { return this->shader; }
 		std::shared_ptr<Texture> getTexture() const { return this->texture; }

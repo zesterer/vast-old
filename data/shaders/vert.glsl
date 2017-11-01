@@ -19,7 +19,9 @@ uniform sampler2D uni_texture;
 void main()
 {
 	vec4 world_pos = uni_mod_mat * vec4(vert_pos, 1);
+
 	gl_Position = uni_proj_mat * uni_view_mat * world_pos;
+	gl_Position.z = -(1 / (-gl_Position.z - 1) + 1);
 
 	frag_pos = world_pos;
 	frag_col = vert_col;

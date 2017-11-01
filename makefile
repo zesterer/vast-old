@@ -117,7 +117,7 @@ clean :
 	@rm -r -f $(EXEC) $(OBJ_FILES) $(DEP_FILES) $(TGT_DIRS)
 
 $(EXEC) : $(OBJ_FILES)
-	@echo "[`date "+%H:%M:%S"`] Linking '$@'..."
+	@#echo "[`date "+%H:%M:%S"`] Linking '$@'..."
 	@$(TOOL_DIR)/$(LD) $(CPP_FLAGS) -o $@ $(OBJ_FILES) $(LINK_FLAGS)
 	@echo "[`date "+%H:%M:%S"`] Linked '$@'."
 
@@ -125,24 +125,24 @@ $(EXEC) : $(OBJ_FILES)
 
 # Compile .s files
 $(TGT_ROOT)/%.s.o : $(SRC_ROOT)/%.s
-	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
+	@#echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CPP_FLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .S files
 $(TGT_ROOT)/%.S.o : $(SRC_ROOT)/%.S
-	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
+	@#echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(AS) -c -o $@ $< $(CPP_FLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .c files
 $(TGT_ROOT)/%.c.o : $(SRC_ROOT)/%.c
-	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
+	@#echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(CC) -MMD -c -o $@ $< $(CPP_FLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."
 
 # Compile .cpp files
 $(TGT_ROOT)/%.cpp.o : $(SRC_ROOT)/%.cpp
-	@echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
+	@#echo "[`date "+%H:%M:%S"`] Compiling '$<'..."
 	@$(TOOL_DIR)/$(CPP) -MMD -c -o $@ $< $(CPP_FLAGS)
 	@echo "[`date "+%H:%M:%S"`] Compiled '$@'."

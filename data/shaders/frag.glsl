@@ -13,6 +13,8 @@ uniform mat4 uni_mod_mat;
 uniform vec3 uni_color;
 uniform sampler2D uni_texture;
 
+float diffuse_factor = 0.5;
+float ambiant_factor = 0.2;
 vec3  sun_direction = normalize(vec3(-1.5, -0.8, -1));
 vec3  sun_color     = vec3(1, 1, 1);
 float sun_factor    = 50;
@@ -25,10 +27,10 @@ void main()
 	vec3 cam_pos = (uni_view_mat * frag_pos).xyz;
 
 	// Ambiant light
-	vec3 ambiant_light = 0.5 * sun_color;
+	vec3 ambiant_light = ambiant_factor * sun_color;
 
 	// Diffuse light
-	vec3 diffuse_light = 0.5 * sun_color * max(0, dot(world_norm, -normalize(sun_direction)));
+	vec3 diffuse_light = diffuse_factor * sun_color * max(0, dot(world_norm, -normalize(sun_direction)));
 
 	// Specular light
 	vec3  reflect_vec = (uni_view_mat * vec4(reflect(sun_direction, world_norm), 0)).xyz;
