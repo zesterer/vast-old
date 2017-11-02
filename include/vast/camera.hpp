@@ -20,8 +20,7 @@ namespace Vast
 		glm::mat4 spin_mat;
 
 	protected:
-		void tick_handler(SceneObject& parent) override;
-		void update_handler(SceneObject& parent) override;
+		void event_handler(SceneObject& parent, SceneEvent event) override;
 
 	public:
 		glm::mat4 getProjMatrix() const { return this->proj_mat; }
@@ -29,6 +28,8 @@ namespace Vast
 		glm::mat4 getSpinMatrix() const { return this->spin_mat; }
 
 		glm::vec3 getLookVector() const;
+
+		void updateMatrices(SceneObject& parent);
 	};
 }
 

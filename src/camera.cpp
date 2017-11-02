@@ -7,14 +7,7 @@
 
 namespace Vast
 {
-	void Camera::tick_handler(SceneObject& parent)
-	{
-		(void)parent;
-
-		this->state.tick();
-	}
-
-	void Camera::update_handler(SceneObject& parent)
+	void Camera::updateMatrices(SceneObject& parent)
 	{
 		this->state.updateRelativeTo(parent.state.mat);
 
@@ -35,6 +28,26 @@ namespace Vast
 		this->spin_mat = this->view_mat;
 		glm::vec3 pinv = glm::vec3(parent.state.mat * glm::vec4(this->state.pos, 1));
 		this->spin_mat = glm::translate(this->spin_mat, pinv); // Translate back to camera space
+	}
+
+	void Camera::event_handler(SceneObject& parent, SceneEvent event)
+	{
+		switch (event.type)
+		{
+		case SceneEvent::Type::TICK:
+			this->state.tick();
+			break;
+
+		case SceneEvent::Type::UPDATE:
+			this->updateMatrices(parent);
+			break;
+
+		default:
+			break;
+		}
+
+		if (!event.cancelled)
+			SceneObject::event_handler(parent, event);
 	}
 
 	glm::vec3 Camera::getLookVector() const

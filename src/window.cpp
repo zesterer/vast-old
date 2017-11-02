@@ -81,7 +81,8 @@ namespace Vast
 			double cursor_x, cursor_y;
 			glfwGetWindowSize(this->window, &width, &height);
 			glfwGetCursorPos(this->window, &cursor_x, &cursor_y);
-			glfwSetCursorPos(this->window, width / 2, height / 2);
+
+			this->centreCursor();
 
 			// Find the amount the cursor has moved since the last reset
 			this->inputstate.setCursorOffset(glm::vec2(cursor_x - width / 2, cursor_y - height / 2));
@@ -111,9 +112,19 @@ namespace Vast
 		this->cursor_trapped = trapped;
 
 		if (this->cursor_trapped)
+		{
 			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			this->centreCursor();
+		}
 		else
 			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	void Window::centreCursor()
+	{
+		int width, height;
+		glfwGetWindowSize(this->window, &width, &height);
+		glfwSetCursorPos(this->window, width / 2, height / 2);
 	}
 
 	void Window::close()

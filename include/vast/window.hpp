@@ -26,6 +26,7 @@ namespace Vast
 		bool getCursorTrapped() { return this->cursor_trapped; }
 
 		void setCursorTrapped(bool trapped);
+		void centreCursor();
 
 		bool open(std::string title);
 		void display();

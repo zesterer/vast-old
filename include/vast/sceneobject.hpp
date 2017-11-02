@@ -13,6 +13,20 @@
 
 namespace Vast
 {
+	struct SceneEvent
+	{
+		enum class Type
+		{
+			UPDATE,
+			TICK,
+		};
+
+		Type type;
+		bool cancelled = false;
+
+		SceneEvent(Type type) : type(type) {}
+	};
+
 	class SceneObject
 	{
 	public:
@@ -20,15 +34,14 @@ namespace Vast
 
 		std::vector<std::weak_ptr<SceneObject>> children;
 
-		virtual void tick_handler(SceneObject& parent) { (void)parent; }
-		virtual void update_handler(SceneObject& parent) { (void)parent; }
+		virtual void event_handler(SceneObject& parent, SceneEvent event) { (void)parent; (void)event; }
 
 		void addChild(std::weak_ptr<SceneObject> child)
 		{
 			this->children.push_back(child);
 		}
 
-		void updateChildren()
+		void eventChildren(SceneEvent event)
 		{
 			for (std::weak_ptr<SceneObject> wref : this->children)
 			{
@@ -36,32 +49,9 @@ namespace Vast
 					continue;
 
 				std::shared_ptr<SceneObject> child = wref.lock();
-				child->update(*this);
+				child->event_handler(*this, event);
+				child->eventChildren(event);
 			}
-		}
-
-		void tickChildren()
-		{
-			for (std::weak_ptr<SceneObject> wref : this->children)
-			{
-				if (wref.expired())
-					continue;
-
-				std::shared_ptr<SceneObject> child = wref.lock();
-				child->tick(*this);
-			}
-		}
-
-		void update(SceneObject& parent)
-		{
-			this->update_handler(parent);
-			this->updateChildren();
-		}
-
-		void tick(SceneObject& parent)
-		{
-			this->tick_handler(parent);
-			this->updateChildren();
 		}
 	};
 }

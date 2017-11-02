@@ -22,16 +22,24 @@ namespace Vast
 		std::shared_ptr<Texture> texture;
 
 	protected:
-		void tick_handler(SceneObject& parent) override
+		void event_handler(SceneObject& parent, SceneEvent event) override
 		{
-			(void)parent;
+			switch (event.type)
+			{
+			case SceneEvent::Type::TICK:
+				this->state.tick();
+				break;
 
-			this->state.tick();
-		}
+			case SceneEvent::Type::UPDATE:
+				this->state.updateRelativeTo(parent.state.mat);
+				break;
 
-		void update_handler(SceneObject& parent) override
-		{
-			this->state.updateRelativeTo(parent.state.mat);
+			default:
+				break;
+			}
+
+			if (!event.cancelled)
+				SceneObject::event_handler(parent, event);
 		}
 
 	public:

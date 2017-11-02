@@ -86,14 +86,17 @@ namespace Vast
 
 	void Scene::tick()
 	{
-		this->root.tickChildren();
-		this->root.updateChildren();
+		//this->root.tickChildren();
+		//this->root.updateChildren();
+
+		this->root.eventChildren(SceneEvent(SceneEvent::Type::TICK));
+		this->root.eventChildren(SceneEvent(SceneEvent::Type::UPDATE));
 	}
 
 	void Scene::handleInput(const InputState& inputstate)
 	{
 		this->camera->state.ori *= glm::quat(glm::vec3(0, 0, 0.0015 * inputstate.getCursorOffset().x));
-		this->camera->state.ori *= glm::quat(glm::vec3(0, 0.0015 * inputstate.getCursorOffset().y, 0));
+		this->camera->state.ori *= glm::quat(glm::vec3(0, -0.0015 * inputstate.getCursorOffset().y, 0));
 
 		// Spin
 
@@ -136,7 +139,7 @@ namespace Vast
 
 		// Movement deceleration
 		if (glm::length(craft_entity->state.vel) > 0)
-			craft_entity->state.vel -= 0.5f * glm::normalize(craft_entity->state.vel) * glm::length(craft_entity->state.vel) * glm::length(craft_entity->state.vel);
+			craft_entity->state.vel -= 0.4f * glm::normalize(craft_entity->state.vel) * glm::pow(glm::length(craft_entity->state.vel), 1.0f);
 	}
 
 	void Scene::draw(Renderer& renderer)
