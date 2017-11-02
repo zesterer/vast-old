@@ -30,7 +30,7 @@ namespace Vast
 		this->spin_mat = glm::translate(this->spin_mat, pinv); // Translate back to camera space
 	}
 
-	void Camera::event_handler(SceneObject& parent, SceneEvent event)
+	bool Camera::event_handler(SceneObject& parent, SceneEvent event)
 	{
 		switch (event.type)
 		{
@@ -46,8 +46,7 @@ namespace Vast
 			break;
 		}
 
-		if (!event.cancelled)
-			SceneObject::event_handler(parent, event);
+		return SceneObject::event_handler(parent, event);
 	}
 
 	glm::vec3 Camera::getLookVector() const

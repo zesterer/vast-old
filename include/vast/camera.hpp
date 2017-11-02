@@ -20,7 +20,7 @@ namespace Vast
 		glm::mat4 spin_mat;
 
 	protected:
-		void event_handler(SceneObject& parent, SceneEvent event) override;
+		bool event_handler(SceneObject& parent, SceneEvent event) override;
 
 	public:
 		glm::mat4 getProjMatrix() const { return this->proj_mat; }

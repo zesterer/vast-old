@@ -22,7 +22,7 @@ namespace Vast
 		std::shared_ptr<Texture> texture;
 
 	protected:
-		void event_handler(SceneObject& parent, SceneEvent event) override
+		bool event_handler(SceneObject& parent, SceneEvent event) override
 		{
 			switch (event.type)
 			{
@@ -38,8 +38,7 @@ namespace Vast
 				break;
 			}
 
-			if (!event.cancelled)
-				SceneObject::event_handler(parent, event);
+			return SceneObject::event_handler(parent, event);
 		}
 
 	public:

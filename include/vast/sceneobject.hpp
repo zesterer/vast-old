@@ -2,6 +2,7 @@
 #define VAST_SCENEOBJ_HPP
 
 // Vast
+#include <vast/sceneevent.hpp>
 #include <vast/state.hpp>
 
 // Library
@@ -13,20 +14,6 @@
 
 namespace Vast
 {
-	struct SceneEvent
-	{
-		enum class Type
-		{
-			UPDATE,
-			TICK,
-		};
-
-		Type type;
-		bool cancelled = false;
-
-		SceneEvent(Type type) : type(type) {}
-	};
-
 	class SceneObject
 	{
 	public:
@@ -34,7 +21,7 @@ namespace Vast
 
 		std::vector<std::weak_ptr<SceneObject>> children;
 
-		virtual void event_handler(SceneObject& parent, SceneEvent event) { (void)parent; (void)event; }
+		virtual bool event_handler(SceneObject& parent, SceneEvent event) { (void)parent; (void)event; return false; }
 
 		void addChild(std::weak_ptr<SceneObject> child)
 		{
@@ -49,8 +36,8 @@ namespace Vast
 					continue;
 
 				std::shared_ptr<SceneObject> child = wref.lock();
-				child->event_handler(*this, event);
-				child->eventChildren(event);
+				if (!child->event_handler(*this, event)) // Only propagate event if not cancelled
+					child->eventChildren(event);
 			}
 		}
 	};
