@@ -23,7 +23,6 @@ namespace Vast
 		std::shared_ptr<Camera> camera = std::make_shared<Camera>();
 
 		SceneObject root;
-		std::vector<std::shared_ptr<Entity>> entities;
 
 	public:
 		const std::shared_ptr<Camera> getCamera() const { return this->camera; }
@@ -32,6 +31,7 @@ namespace Vast
 		void tick();
 		void handleInput(const InputState& inputstate);
 		void draw(Renderer& renderer);
+		void drawSceneObject(Renderer& renderer, const SceneObject& obj);
 		void drawEntity(Renderer& renderer, const Entity& entity);
 	};
 }

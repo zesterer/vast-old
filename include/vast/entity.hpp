@@ -9,9 +9,6 @@
 #include <vast/shader.hpp>
 #include <vast/texture.hpp>
 
-// Standard
-#include <memory>
-
 namespace Vast
 {
 	class Entity : public Resource, public SceneObject
@@ -22,24 +19,7 @@ namespace Vast
 		std::shared_ptr<Texture> texture;
 
 	protected:
-		bool event_handler(SceneObject& parent, SceneEvent event) override
-		{
-			switch (event.type)
-			{
-			case SceneEvent::Type::TICK:
-				this->state.tick();
-				break;
-
-			case SceneEvent::Type::UPDATE:
-				this->state.updateRelativeTo(parent.state.mat);
-				break;
-
-			default:
-				break;
-			}
-
-			return SceneObject::event_handler(parent, event);
-		}
+		bool event_handler(SceneObject& parent, SceneEvent event) override;
 
 	public:
 		std::shared_ptr<Model> getModel() const     { return this->model; }

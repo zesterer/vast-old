@@ -3,6 +3,8 @@
 #include <vast/log.hpp>
 #include <vast/heap.hpp>
 
+#include <vast/voxelentity.hpp>
+#include <vast/entity.hpp>
 #include <vast/mesh.hpp>
 #include <vast/image.hpp>
 #include <vast/texture.hpp>
@@ -24,6 +26,8 @@ namespace Vast
 
 	std::shared_ptr<CubeMap> skybox_cubemap;
 	std::shared_ptr<Model>   skybox_model;
+
+	std::shared_ptr<VoxelEntity>  craft;
 
 	bool Scene::init()
 	{
@@ -50,7 +54,6 @@ namespace Vast
 		craft_entity0->setTexture(craft_texture);
 		craft_entity0->setShader(model_shader);
 		craft_entity0->state.pos = glm::vec3(10, 0, 0);
-		this->entities.push_back(craft_entity0);
 
 		craft_entity = std::make_shared<Entity>();
 		this->root.addChild(craft_entity);
@@ -58,7 +61,6 @@ namespace Vast
 		craft_entity->setTexture(craft_texture);
 		craft_entity->setShader(model_shader);
 		//craft_entity->state.rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
-		this->entities.push_back(craft_entity);
 
 		this->camera->state.pos = glm::vec3(-20, 0, 5);
 		craft_entity->addChild(this->camera);
@@ -100,27 +102,29 @@ namespace Vast
 
 		// Spin
 
+		float spin_speed = 0.01;
+
 		if (inputstate.getKeyState(InputState::Key::MOVE_SRIGHT))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, -0.03))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, -spin_speed))) * craft_entity->state.rot;
 		if (inputstate.getKeyState(InputState::Key::MOVE_SLEFT))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, 0.03))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, spin_speed))) * craft_entity->state.rot;
 
 		if (inputstate.getKeyState(InputState::Key::MOVE_SFORWARD))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0.03, 0))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, spin_speed, 0))) * craft_entity->state.rot;
 		if (inputstate.getKeyState(InputState::Key::MOVE_SBACKWARD))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, -0.03, 0))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, -spin_speed, 0))) * craft_entity->state.rot;
 
 		if (inputstate.getKeyState(InputState::Key::MOVE_SCCW))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(-0.03, 0, 0))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(-spin_speed, 0, 0))) * craft_entity->state.rot;
 		if (inputstate.getKeyState(InputState::Key::MOVE_SCW))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0.03, 0, 0))) * craft_entity->state.rot;
+			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(spin_speed, 0, 0))) * craft_entity->state.rot;
 
 		// Spin deceleration
-		craft_entity->state.rot = glm::mix(craft_entity->state.rot, glm::quat(), 0.35f / glm::pow(3.0f * craft_entity->state.rot.w, 2.0f) + 0.2f * craft_entity->state.rot.w);
+		craft_entity->state.rot = glm::mix(craft_entity->state.rot, glm::quat(), 0.1f * craft_entity->state.rot.w);
 
 		// Movement
 
-		float speed = 0.5f;
+		float speed = 0.1f;
 
 		if (inputstate.getKeyState(InputState::Key::MOVE_UP))
 			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(speed, 0, 0);
@@ -139,15 +143,29 @@ namespace Vast
 
 		// Movement deceleration
 		if (glm::length(craft_entity->state.vel) > 0)
-			craft_entity->state.vel -= 0.4f * glm::normalize(craft_entity->state.vel) * glm::pow(glm::length(craft_entity->state.vel), 1.0f);
+			craft_entity->state.vel -= 0.1f * glm::normalize(craft_entity->state.vel) * glm::pow(glm::length(craft_entity->state.vel), 1.0f);
 	}
 
 	void Scene::draw(Renderer& renderer)
 	{
 		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera->getProjMatrix(), this->camera->getSpinMatrix());
 
-		for (std::shared_ptr<Entity> entity : this->entities)
-			this->drawEntity(renderer, *entity);
+		//for (std::shared_ptr<Entity> entity : this->entities)
+		//	this->drawEntity(renderer, *entity);
+
+		this->drawSceneObject(renderer, this->root);
+	}
+
+	void Scene::drawSceneObject(Renderer& renderer, const SceneObject& obj)
+	{
+		if (typeid(obj) == typeid(Entity))
+			this->drawEntity(renderer, dynamic_cast<const Entity&>(obj));
+
+		for (std::weak_ptr<SceneObject> child : obj.children)
+		{
+			if (std::shared_ptr<SceneObject> ptr = child.lock())
+				this->drawSceneObject(renderer, *ptr);
+		}
 	}
 
 	void Scene::drawEntity(Renderer& renderer, const Entity& entity)
