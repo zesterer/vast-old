@@ -107,6 +107,7 @@ namespace Vast
 		{
 		case Shader::Type::MODEL:
 			{
+				this->uniforms_model.time = this->getUniformID("uni_time");
 				this->uniforms_model.proj_mat = this->getUniformID("uni_proj_mat");
 				this->uniforms_model.view_mat = this->getUniformID("uni_view_mat");
 				this->uniforms_model.mod_mat = this->getUniformID("uni_mod_mat");
@@ -117,6 +118,7 @@ namespace Vast
 
 		case Shader::Type::SKYBOX:
 			{
+				this->uniforms_skybox.time = this->getUniformID("uni_time");
 				this->uniforms_skybox.proj_mat = this->getUniformID("uni_proj_mat");
 				this->uniforms_skybox.spin_mat = this->getUniformID("uni_spin_mat");
 				this->uniforms_skybox.cubemap = this->getUniformID("uni_cubemap");

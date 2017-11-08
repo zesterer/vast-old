@@ -7,6 +7,7 @@ smooth in vec4 frag_norm;
 smooth in vec3 frag_col;
 smooth in vec2 frag_uv;
 
+uniform float uni_time;
 uniform mat4 uni_proj_mat;
 uniform mat4 uni_view_mat;
 uniform mat4 uni_mod_mat;

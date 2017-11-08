@@ -93,6 +93,8 @@ namespace Vast
 
 		this->root.eventChildren(SceneEvent(SceneEvent::Type::TICK));
 		this->root.eventChildren(SceneEvent(SceneEvent::Type::UPDATE));
+
+		this->time += 1.0f / 60.0f;
 	}
 
 	void Scene::handleInput(const InputState& inputstate)
@@ -148,10 +150,7 @@ namespace Vast
 
 	void Scene::draw(Renderer& renderer)
 	{
-		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera->getProjMatrix(), this->camera->getSpinMatrix());
-
-		//for (std::shared_ptr<Entity> entity : this->entities)
-		//	this->drawEntity(renderer, *entity);
+		renderer.renderSkybox(*skybox_shader, *skybox_model, *skybox_cubemap, this->camera->getProjMatrix(), this->camera->getSpinMatrix(), this->time);
 
 		this->drawSceneObject(renderer, this->root);
 	}
@@ -172,6 +171,6 @@ namespace Vast
 	{
 		glm::mat4 vm = this->camera->getViewMatrix();//glm::inverse(this->camera->getViewMatrix());
 
-		renderer.renderModel(*entity.getShader(), *entity.getModel(), *entity.getTexture(), this->camera->getProjMatrix(), vm, entity.state.mat, glm::vec3(1, 1, 1));
+		renderer.renderModel(*entity.getShader(), *entity.getModel(), *entity.getTexture(), this->camera->getProjMatrix(), vm, entity.state.mat, glm::vec3(1, 1, 1), this->time);
 	}
 }

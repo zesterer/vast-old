@@ -10,6 +10,7 @@ smooth out vec4 frag_norm;
 smooth out vec3 frag_col;
 smooth out vec2 frag_uv;
 
+uniform float uni_time;
 uniform mat4 uni_proj_mat;
 uniform mat4 uni_view_mat;
 uniform mat4 uni_mod_mat;

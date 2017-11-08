@@ -7,6 +7,7 @@ in vec2 vert_uv;
 
 smooth out vec4 frag_pos;
 
+uniform float uni_time;
 uniform mat4 uni_proj_mat;
 uniform mat4 uni_spin_mat;
 uniform samplerCube uni_cubemap;

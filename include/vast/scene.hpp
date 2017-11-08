@@ -24,6 +24,8 @@ namespace Vast
 
 		SceneObject root;
 
+		float time = 0;
+
 	public:
 		const std::shared_ptr<Camera> getCamera() const { return this->camera; }
 

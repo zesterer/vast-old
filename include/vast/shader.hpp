@@ -14,6 +14,7 @@ namespace Vast
 {
 	struct ShaderUniforms_Model
 	{
+		gl::GLuint time;
 		gl::GLuint proj_mat;
 		gl::GLuint view_mat;
 		gl::GLuint mod_mat;
@@ -23,6 +24,7 @@ namespace Vast
 
 	struct ShaderUniforms_Skybox
 	{
+		gl::GLuint time;
 		gl::GLuint proj_mat;
 		gl::GLuint spin_mat;
 		gl::GLuint cubemap;

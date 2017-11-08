@@ -30,7 +30,7 @@ namespace Vast
 		gl::glClear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::renderModel(const Shader& shader, const Model& model, const Texture& texture, glm::mat4 proj_mat, glm::mat4 view_mat, glm::mat4 mod_mat, glm::vec3 color)
+	void Renderer::renderModel(const Shader& shader, const Model& model, const Texture& texture, glm::mat4 proj_mat, glm::mat4 view_mat, glm::mat4 mod_mat, glm::vec3 color, float time)
 	{
 		if (shader.getType() != Shader::Type::MODEL)
 		{
@@ -42,6 +42,7 @@ namespace Vast
 		gl::glUseProgram(shader.getProgramID());
 
 		// Set uniform values
+		gl::glUniform1f(shader.getModelUniforms().time, time);
 		gl::glUniformMatrix4fv(shader.getModelUniforms().proj_mat, 1, gl::GL_FALSE, &proj_mat[0][0]);
 		gl::glUniformMatrix4fv(shader.getModelUniforms().view_mat, 1, gl::GL_FALSE, &view_mat[0][0]);
 		gl::glUniformMatrix4fv(shader.getModelUniforms().mod_mat, 1, gl::GL_FALSE, &mod_mat[0][0]);
@@ -59,7 +60,7 @@ namespace Vast
 		gl::glDrawArrays(gl::GL_TRIANGLES, 0, model.getVertexCount());
 	}
 
-	void Renderer::renderSkybox(const Shader& shader, const Model& model, const CubeMap& cubemap, glm::mat4 proj_mat, glm::mat4 spin_mat)
+	void Renderer::renderSkybox(const Shader& shader, const Model& model, const CubeMap& cubemap, glm::mat4 proj_mat, glm::mat4 spin_mat, float time)
 	{
 		if (shader.getType() != Shader::Type::SKYBOX)
 		{
@@ -71,6 +72,7 @@ namespace Vast
 		gl::glUseProgram(shader.getProgramID());
 
 		// Set uniform values
+		gl::glUniform1f(shader.getSkyboxUniforms().time, time);
 		gl::glUniformMatrix4fv(shader.getSkyboxUniforms().proj_mat, 1, gl::GL_FALSE, &proj_mat[0][0]);
 		gl::glUniformMatrix4fv(shader.getSkyboxUniforms().spin_mat, 1, gl::GL_FALSE, &spin_mat[0][0]);
 
