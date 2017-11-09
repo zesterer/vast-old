@@ -11,12 +11,14 @@ namespace Vast
 	{
 	private:
 		Volume vol;
+		glm::vec3 center;
 
 	protected:
 		bool event_handler(SceneObject& parent, SceneEvent event) override;
 
 	public:
-		// Nothing yet
+		VoxelEntity(glm::ivec3 size, glm::vec3 center);
+		void remesh();
 	};
 }
 

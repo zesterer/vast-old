@@ -58,6 +58,13 @@ namespace Vast
 			this->v1.norm = n;
 			this->v2.norm = n;
 		}
+
+		void offset(glm::vec3 off)
+		{
+			this->v0.pos += off;
+			this->v1.pos += off;
+			this->v2.pos += off;
+		}
 	};
 
 	struct Quad
@@ -114,6 +121,12 @@ namespace Vast
 		{
 			this->polygons.push_back(quad.p0);
 			this->polygons.push_back(quad.p1);
+		}
+
+		void offset(glm::vec3 off)
+		{
+			for (Polygon& p : this->polygons)
+				p.offset(off);
 		}
 
 		long getVertexCount() const

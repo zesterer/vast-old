@@ -27,7 +27,9 @@ namespace Vast
 	std::shared_ptr<CubeMap> skybox_cubemap;
 	std::shared_ptr<Model>   skybox_model;
 
-	std::shared_ptr<VoxelEntity>  craft;
+	std::shared_ptr<VoxelEntity> rock;
+	std::shared_ptr<Model>       rock_model;
+	std::shared_ptr<Texture>     rock_texture;
 
 	bool Scene::init()
 	{
@@ -60,7 +62,26 @@ namespace Vast
 		craft_entity->setModel(craft_model);
 		craft_entity->setTexture(craft_texture);
 		craft_entity->setShader(model_shader);
-		//craft_entity->state.rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
+		craft_entity0->state.rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
+
+		{
+			Mesh rock_mesh("data/obj/rock.obj");
+			Image rock_image("data/gfx/rock.png");
+
+			rock_model = std::make_shared<Model>(rock_mesh);
+			rock_texture = std::make_shared<Texture>(rock_image);
+
+			rock = std::make_shared<VoxelEntity>(glm::ivec3(64, 64, 64), glm::vec3(32, 32, 32));
+			rock->state.pos = glm::vec3(100, 0, 0);
+			rock->state.rot = glm::quat(glm::vec3(0.01, 0, 0));
+			rock->setModel(rock_model);
+			rock->setTexture(craft_texture);
+			rock->setShader(model_shader);
+
+			rock->remesh();
+
+			this->root.addChild(rock);
+		}
 
 		this->camera->state.pos = glm::vec3(-20, 0, 5);
 		craft_entity->addChild(this->camera);
@@ -157,8 +178,8 @@ namespace Vast
 
 	void Scene::drawSceneObject(Renderer& renderer, const SceneObject& obj)
 	{
-		if (typeid(obj) == typeid(Entity))
-			this->drawEntity(renderer, dynamic_cast<const Entity&>(obj));
+		if (dynamic_cast<const Entity*>(&obj) != nullptr)
+			this->drawEntity(renderer, reinterpret_cast<const Entity&>(obj));
 
 		for (std::weak_ptr<SceneObject> child : obj.children)
 		{
