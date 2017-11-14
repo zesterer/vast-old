@@ -183,7 +183,7 @@ namespace Vast
 		if (std::get<2>(indices).y >= 0) p.v1.norm = this->normals[std::get<2>(indices).y];
 		if (std::get<2>(indices).z >= 0) p.v2.norm = this->normals[std::get<2>(indices).z];
 
-		p.normalize();
+		//p.normalize();
 
 		return p;
 	}

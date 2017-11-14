@@ -20,6 +20,8 @@ namespace Vast
 		VoxelEntity(glm::ivec3 size, glm::vec3 center);
 		VoxelEntity(std::string filename);
 		void remesh();
+
+		glm::vec3 tryCollide(glm::vec3 pos, glm::vec3 sz);
 	};
 }
 

@@ -15,8 +15,8 @@ uniform vec3 uni_color;
 uniform sampler2D uni_texture;
 
 float diffuse_factor = 0.5;
-float ambiant_factor = 0.2;
-vec3  sun_direction = normalize(vec3(1.5, -0.8, -1));
+float ambiant_factor = 0.4;
+vec3  sun_direction = normalize(vec3(1, -1, -1));
 vec3  sun_color     = vec3(1, 1, 1);
 float sun_factor    = 50;
 float sun_shine     = 0;

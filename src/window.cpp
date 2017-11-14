@@ -35,7 +35,7 @@ namespace Vast
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Create the window
-		this->window = glfwCreateWindow(800, 600, title.c_str(), NULL, NULL);
+		this->window = glfwCreateWindow(1200, 800, title.c_str(), NULL, NULL);
 
 		// Check the window opened properly
 		if (this->window == nullptr)

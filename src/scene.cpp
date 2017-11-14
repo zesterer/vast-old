@@ -42,7 +42,7 @@ namespace Vast
 		// Mesh craft_mesh("data/obj/craft.obj");
 		// craft_model = std::make_shared<Model>(craft_mesh);
 
-		Image craft_image("data/gfx/test.png");
+		Image craft_image("data/gfx/block.jpg");
 		craft_texture = std::make_shared<Texture>(craft_image);
 
 		Mesh skybox_mesh("data/obj/skybox.obj");
@@ -66,7 +66,7 @@ namespace Vast
 
 			rock = std::make_shared<Entity>();
 			rock->state.pos = glm::vec3(100, 0, 0);
-			rock->state.rot = glm::quat(glm::vec3(0.01, 0, 0));
+			rock->state.rot = glm::quat(glm::vec3(0.001, 0, 0));
 			rock->setModel(rock_model);
 			rock->setTexture(rock_texture);
 			rock->setShader(model_shader);
@@ -76,7 +76,7 @@ namespace Vast
 			this->root.addChild(rock);
 		}
 
-		this->camera->state.pos = glm::vec3(1, 0, 0);
+		this->camera->state.pos = glm::vec3(0, 0, 0);
 		craft_entity->addChild(this->camera);
 		//this->root.addChild(this->camera);
 
@@ -157,19 +157,23 @@ namespace Vast
 			glm::vec3 mx = glm::vec3(sin(cam_yaw), cos(cam_yaw), 0);
 			glm::vec3 my = glm::vec3(cos(cam_yaw), -sin(cam_yaw), 0);
 
+			glm::vec3 mov = this->camera->state.pos;
+
 			if (inputstate.getKeyState(InputState::Key::MOVE_SRIGHT))
-				this->camera->state.pos -= mx * 0.1f;
+				mov -= mx * 0.1f;
 			if (inputstate.getKeyState(InputState::Key::MOVE_SLEFT))
-				this->camera->state.pos += mx * 0.1f;
+				mov += mx * 0.1f;
 			if (inputstate.getKeyState(InputState::Key::MOVE_SFORWARD))
-				this->camera->state.pos += my * 0.1f;
+				mov += my * 0.1f;
 			if (inputstate.getKeyState(InputState::Key::MOVE_SBACKWARD))
-				this->camera->state.pos -= my * 0.1f;
+				mov -= my * 0.1f;
 
 			if (inputstate.getKeyState(InputState::Key::MOVE_CROUCH))
-				this->camera->state.pos.z -= 0.1f;
+				mov.z -= 0.1f;
 			if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
-				this->camera->state.pos.z += 0.1f;
+				mov.z += 0.1f;
+
+			this->camera->state.pos = mov;
 		}
 
 		// Movement
@@ -200,6 +204,10 @@ namespace Vast
 		// Movement deceleration
 		if (glm::length(craft_entity->state.vel) > 0)
 			craft_entity->state.vel -= 0.1f * glm::normalize(craft_entity->state.vel) * glm::pow(glm::length(craft_entity->state.vel), 1.0f);
+
+		// Floor collisions
+		this->camera->state.pos.z -= 0.05f;
+		this->camera->state.pos = craft_entity->tryCollide(this->camera->state.pos - glm::vec3(0.5f, 0.5f, 2.0f), glm::vec3(1, 1, 1.8)) + glm::vec3(0.5f, 0.5f, 2.0f);
 	}
 
 	void Scene::draw(Renderer& renderer)
