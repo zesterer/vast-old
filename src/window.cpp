@@ -5,8 +5,15 @@
 // Library
 #include <glbinding/gl/gl.h>
 
+// Standard
+#include <unordered_map>
+
 namespace Vast
 {
+	std::unordered_map<GLFWwindow*, Window*> windows;
+
+	void GLFWKeyEvent(GLFWwindow* win, int key, int scancode, int action, int mods);
+
 	bool Window::isOpen() const
 	{
 		return !glfwWindowShouldClose(this->window);
@@ -40,6 +47,9 @@ namespace Vast
 		else
 			g_log.write("Window with title '" + title + "' opened");
 
+		windows[this->window] = this;
+		glfwSetKeyCallback(this->window, &GLFWKeyEvent);
+
 		// Find window OpenGL context version
 		int vmaj = glfwGetWindowAttrib(this->window, GLFW_CONTEXT_VERSION_MAJOR);
 		int vmin = glfwGetWindowAttrib(this->window, GLFW_CONTEXT_VERSION_MAJOR);
@@ -71,6 +81,8 @@ namespace Vast
 
 	void Window::receiveInput()
 	{
+		this->inputstate.reset();
+
 		// Poll window events
 		glfwPollEvents();
 
@@ -127,9 +139,27 @@ namespace Vast
 		glfwSetCursorPos(this->window, width / 2, height / 2);
 	}
 
+	void Window::notifyKeyPress(int key, int scancode, int action, int mod)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_ENTER:
+			this->inputstate.addEvent(InputState::KeyEvent(InputState::Key::SWITCH_MODE, action == GLFW_PRESS));
+			break;
+
+		default:
+			break;
+		}
+	}
+
 	void Window::close()
 	{
 		glfwTerminate();
 		g_log.write("Closed window");
+	}
+
+	void GLFWKeyEvent(GLFWwindow* win, int key, int scancode, int action, int mods)
+	{
+		windows[win]->notifyKeyPress(key, scancode, action, mods);
 	}
 }

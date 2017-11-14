@@ -19,17 +19,15 @@ namespace Vast
 	std::shared_ptr<Shader> model_shader;
 	std::shared_ptr<Shader> skybox_shader;
 
-	std::shared_ptr<Entity>  craft_entity0;
-	std::shared_ptr<Entity>  craft_entity;
-	std::shared_ptr<Model>   craft_model;
-	std::shared_ptr<Texture> craft_texture;
+	std::shared_ptr<VoxelEntity> craft_entity;
+	std::shared_ptr<Texture>     craft_texture;
 
 	std::shared_ptr<CubeMap> skybox_cubemap;
 	std::shared_ptr<Model>   skybox_model;
 
-	std::shared_ptr<VoxelEntity> rock;
-	std::shared_ptr<Model>       rock_model;
-	std::shared_ptr<Texture>     rock_texture;
+	std::shared_ptr<Entity>  rock;
+	std::shared_ptr<Model>   rock_model;
+	std::shared_ptr<Texture> rock_texture;
 
 	bool Scene::init()
 	{
@@ -41,8 +39,8 @@ namespace Vast
 		skybox_shader = std::make_shared<Shader>(Shader::Type::SKYBOX);
 		skybox_shader->loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
 
-		Mesh craft_mesh("data/obj/craft.obj");
-		craft_model = std::make_shared<Model>(craft_mesh);
+		// Mesh craft_mesh("data/obj/craft.obj");
+		// craft_model = std::make_shared<Model>(craft_mesh);
 
 		Image craft_image("data/gfx/test.png");
 		craft_texture = std::make_shared<Texture>(craft_image);
@@ -50,20 +48,15 @@ namespace Vast
 		Mesh skybox_mesh("data/obj/skybox.obj");
 		skybox_model = std::make_shared<Model>(skybox_mesh);
 
-		craft_entity0 = std::make_shared<Entity>();
-		this->root.addChild(craft_entity0);
-		craft_entity0->setModel(craft_model);
-		craft_entity0->setTexture(craft_texture);
-		craft_entity0->setShader(model_shader);
-		craft_entity0->state.pos = glm::vec3(10, 0, 0);
+		// Craft
+		{
+			craft_entity = std::make_shared<VoxelEntity>("data/vox/craft.vox");
+			this->root.addChild(craft_entity);
+			craft_entity->setTexture(craft_texture);
+			craft_entity->setShader(model_shader);
+		}
 
-		craft_entity = std::make_shared<Entity>();
-		this->root.addChild(craft_entity);
-		craft_entity->setModel(craft_model);
-		craft_entity->setTexture(craft_texture);
-		craft_entity->setShader(model_shader);
-		craft_entity0->state.rot = glm::quat(glm::vec3(0.0, 0.0, 0.01));
-
+		// Rock
 		{
 			Mesh rock_mesh("data/obj/rock.obj");
 			Image rock_image("data/gfx/rock.png");
@@ -71,19 +64,19 @@ namespace Vast
 			rock_model = std::make_shared<Model>(rock_mesh);
 			rock_texture = std::make_shared<Texture>(rock_image);
 
-			rock = std::make_shared<VoxelEntity>(glm::ivec3(64, 64, 64), glm::vec3(32, 32, 32));
+			rock = std::make_shared<Entity>();
 			rock->state.pos = glm::vec3(100, 0, 0);
 			rock->state.rot = glm::quat(glm::vec3(0.01, 0, 0));
 			rock->setModel(rock_model);
-			rock->setTexture(craft_texture);
+			rock->setTexture(rock_texture);
 			rock->setShader(model_shader);
 
-			rock->remesh();
+			//rock->remesh();
 
 			this->root.addChild(rock);
 		}
 
-		this->camera->state.pos = glm::vec3(-20, 0, 5);
+		this->camera->state.pos = glm::vec3(1, 0, 0);
 		craft_entity->addChild(this->camera);
 		//this->root.addChild(this->camera);
 
@@ -109,60 +102,100 @@ namespace Vast
 
 	void Scene::tick()
 	{
-		//this->root.tickChildren();
-		//this->root.updateChildren();
-
 		this->root.eventChildren(SceneEvent(SceneEvent::Type::TICK));
 		this->root.eventChildren(SceneEvent(SceneEvent::Type::UPDATE));
 
 		this->time += 1.0f / 60.0f;
 	}
 
+	float cam_yaw = 0, cam_pitch = 0;
+	bool flight_mode = false;
+
 	void Scene::handleInput(const InputState& inputstate)
 	{
 		this->camera->state.ori *= glm::quat(glm::vec3(0, 0, 0.0015 * inputstate.getCursorOffset().x));
 		this->camera->state.ori *= glm::quat(glm::vec3(0, -0.0015 * inputstate.getCursorOffset().y, 0));
 
+		cam_yaw += 0.002f * inputstate.getCursorOffset().x;
+		cam_pitch -= 0.002f * inputstate.getCursorOffset().y;
+
+		this->camera->state.ori = glm::quat();
+		this->camera->state.ori = glm::rotate(this->camera->state.ori, cam_pitch, glm::vec3(0, 1, 0));
+		this->camera->state.ori = glm::rotate(this->camera->state.ori, cam_yaw, glm::vec3(0, 0, 1));
+
+		// Mode switching
+
+		for (const InputState::KeyEvent& e : inputstate.getEvents())
+		{
+			if (e.key == InputState::Key::SWITCH_MODE && e.pressed)
+				flight_mode = !flight_mode;
+		}
+
 		// Spin
 
-		float spin_speed = 0.01;
+		if (flight_mode)
+		{
+			float spin_speed = 0.01;
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_SRIGHT))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, -spin_speed))) * craft_entity->state.rot;
-		if (inputstate.getKeyState(InputState::Key::MOVE_SLEFT))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, spin_speed))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SRIGHT))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, -spin_speed))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SLEFT))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, 0, spin_speed))) * craft_entity->state.rot;
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_SFORWARD))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, spin_speed, 0))) * craft_entity->state.rot;
-		if (inputstate.getKeyState(InputState::Key::MOVE_SBACKWARD))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, -spin_speed, 0))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SFORWARD))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, spin_speed, 0))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SBACKWARD))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(0, -spin_speed, 0))) * craft_entity->state.rot;
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_SCCW))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(-spin_speed, 0, 0))) * craft_entity->state.rot;
-		if (inputstate.getKeyState(InputState::Key::MOVE_SCW))
-			craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(spin_speed, 0, 0))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SCCW))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(-spin_speed, 0, 0))) * craft_entity->state.rot;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SCW))
+				craft_entity->state.rot = glm::quat(craft_entity->state.ori * (glm::vec3(spin_speed, 0, 0))) * craft_entity->state.rot;
+		}
+		else
+		{
+			glm::vec3 mx = glm::vec3(sin(cam_yaw), cos(cam_yaw), 0);
+			glm::vec3 my = glm::vec3(cos(cam_yaw), -sin(cam_yaw), 0);
 
-		// Spin deceleration
-		craft_entity->state.rot = glm::mix(craft_entity->state.rot, glm::quat(), 0.1f * craft_entity->state.rot.w);
+			if (inputstate.getKeyState(InputState::Key::MOVE_SRIGHT))
+				this->camera->state.pos -= mx * 0.1f;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SLEFT))
+				this->camera->state.pos += mx * 0.1f;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SFORWARD))
+				this->camera->state.pos += my * 0.1f;
+			if (inputstate.getKeyState(InputState::Key::MOVE_SBACKWARD))
+				this->camera->state.pos -= my * 0.1f;
+
+			if (inputstate.getKeyState(InputState::Key::MOVE_CROUCH))
+				this->camera->state.pos.z -= 0.1f;
+			if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
+				this->camera->state.pos.z += 0.1f;
+		}
 
 		// Movement
 
-		float speed = 0.1f;
+		if (flight_mode)
+		{
+			float speed = 0.1f;
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_UP))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(speed, 0, 0);
-		if (inputstate.getKeyState(InputState::Key::MOVE_DOWN))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(-speed, 0, 0);
+			if (inputstate.getKeyState(InputState::Key::MOVE_UP))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(speed, 0, 0);
+			if (inputstate.getKeyState(InputState::Key::MOVE_DOWN))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(-speed, 0, 0);
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_LEFT))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, speed, 0);
-		if (inputstate.getKeyState(InputState::Key::MOVE_RIGHT))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, -speed, 0);
+			if (inputstate.getKeyState(InputState::Key::MOVE_LEFT))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, speed, 0);
+			if (inputstate.getKeyState(InputState::Key::MOVE_RIGHT))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, -speed, 0);
 
-		if (inputstate.getKeyState(InputState::Key::MOVE_CROUCH))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, 0, -speed);
-		if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
-			craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, 0, speed);
+			if (inputstate.getKeyState(InputState::Key::MOVE_CROUCH))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, 0, -speed);
+			if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
+				craft_entity->state.vel += craft_entity->state.ori * glm::vec3(0, 0, speed);
+		}
+
+		// Spin deceleration
+		craft_entity->state.rot = glm::mix(craft_entity->state.rot, glm::quat(), 0.1f * craft_entity->state.rot.w);
 
 		// Movement deceleration
 		if (glm::length(craft_entity->state.vel) > 0)

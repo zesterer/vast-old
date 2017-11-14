@@ -31,6 +31,7 @@ namespace Vast
 		bool open(std::string title);
 		void display();
 		void receiveInput();
+		void notifyKeyPress(int key, int scancode, int action, int mods);
 		void close();
 	};
 }

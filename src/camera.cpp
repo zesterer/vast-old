@@ -11,7 +11,7 @@ namespace Vast
 	{
 		this->state.updateRelativeTo(parent.state.mat);
 
-		this->proj_mat = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10000000.0f);
+		this->proj_mat = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.001f, 10000000.0f);
 
 		this->view_mat = glm::mat4(1.0f);
 

@@ -18,6 +18,7 @@ namespace Vast
 
 	public:
 		VoxelEntity(glm::ivec3 size, glm::vec3 center);
+		VoxelEntity(std::string filename);
 		void remesh();
 	};
 }

@@ -132,8 +132,11 @@ namespace Vast
 		else if (std::sscanf(line.c_str(), "v %f %f %f", &f0, &f1, &f2) >= 3)
 			this->vertices.push_back(glm::vec3(f0, f1, f2));
 		// Try vertex textcoords format
-		else if (std::sscanf(line.c_str(), "vt %f %f %f", &f0, &f1, &f2) >= 3)
-			this->uvs.push_back(glm::vec3(f0, f1, f2));
+		// else if (std::sscanf(line.c_str(), "vt %f %f %f", &f0, &f1, &f2) >= 3)
+		// 	this->uvs.push_back(glm::vec3(f0, f1, f2));
+		// Try vertex textcoords format
+		else if (std::sscanf(line.c_str(), "vt %f %f", &f0, &f1) >= 2)
+			this->uvs.push_back(glm::vec2(f0, f1));
 		// Try vertex normal format
 		else if (std::sscanf(line.c_str(), "vn %f %f %f", &f0, &f1, &f2) >= 3)
 			this->normals.push_back(glm::vec3(f0, f1, f2));
@@ -172,13 +175,13 @@ namespace Vast
 		if (std::get<0>(indices).y >= 0) p.v1.pos = this->vertices[std::get<0>(indices).y];
 		if (std::get<0>(indices).z >= 0) p.v2.pos = this->vertices[std::get<0>(indices).z];
 
-		if (std::get<1>(indices).x >= 0) p.v0.uv = this->vertices[std::get<1>(indices).x];
-		if (std::get<1>(indices).y >= 0) p.v1.uv = this->vertices[std::get<1>(indices).y];
-		if (std::get<1>(indices).z >= 0) p.v2.uv = this->vertices[std::get<1>(indices).z];
+		if (std::get<1>(indices).x >= 0) p.v0.uv = this->uvs[std::get<1>(indices).x];
+		if (std::get<1>(indices).y >= 0) p.v1.uv = this->uvs[std::get<1>(indices).y];
+		if (std::get<1>(indices).z >= 0) p.v2.uv = this->uvs[std::get<1>(indices).z];
 
-		if (std::get<2>(indices).x >= 0) p.v0.norm = this->vertices[std::get<2>(indices).x];
-		if (std::get<2>(indices).y >= 0) p.v1.norm = this->vertices[std::get<2>(indices).y];
-		if (std::get<2>(indices).z >= 0) p.v2.norm = this->vertices[std::get<2>(indices).z];
+		if (std::get<2>(indices).x >= 0) p.v0.norm = this->normals[std::get<2>(indices).x];
+		if (std::get<2>(indices).y >= 0) p.v1.norm = this->normals[std::get<2>(indices).y];
+		if (std::get<2>(indices).z >= 0) p.v2.norm = this->normals[std::get<2>(indices).z];
 
 		p.normalize();
 

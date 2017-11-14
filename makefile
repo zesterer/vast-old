@@ -24,12 +24,18 @@
 EXEC_NAME = vast
 
 # Build type : 'release' or 'debug'
-BUILD_TYPE = debug
+BUILD_TYPE = release
+
+PLATFORM = win64
 
 SRC_ROOT = $(abspath .)
 TGT_ROOT ?= $(SRC_ROOT)/build
 
-EXEC ?= $(TGT_ROOT)/$(EXEC_NAME)
+ifeq ($(PLATFORM), win64)
+	EXEC ?= $(TGT_ROOT)/$(EXEC_NAME).exe
+else
+	EXEC ?= $(TGT_ROOT)/$(EXEC_NAME)
+endif
 TGT_DIRS += $(dir $(EXEC))
 
 DATA_DIR = $(SRC_ROOT)/data
@@ -39,7 +45,11 @@ DATA_DIR = $(SRC_ROOT)/data
 
 # GLFW
 INC_DIRS += glfw
-LINK_LIBS += X11 glfw
+ifeq ($(PLATFORM), win64)
+	LINK_LIBS += glfw3dll
+else
+	LINK_LIBS += glfw
+endif
 
 # GLBinding
 INC_DIRS += glbinding
@@ -51,6 +61,13 @@ INC_DIRS += glm
 # SOIL
 INC_DIRS += SOIL
 LINK_LIBS += SOIL
+
+# OpenGL
+ifeq ($(PLATFORM), win64)
+	LINK_LIBS += opengl32 glu32
+else
+	LINK_LIBS += X11 glfw
+endif
 
 # C++ Flags
 # ---------
@@ -69,13 +86,18 @@ endif
 # Link Flags
 # ----------
 
+LINK_FLAGS += -pedantic
 LINK_FLAGS += $(addprefix -l, $(LINK_LIBS))
-LINK_FLAGS += -pedantic -lpthread -lm
+LINK_FLAGS += -lpthread -lm
 
 # Tools
 # -----
 
-TOOL_PREFIX ?=
+ifeq ($(PLATFORM), win64)
+	TOOL_PREFIX ?= x86_64-w64-mingw32-
+else
+	TOOL_PREFIX ?=
+endif
 
 AS  = $(TOOL_PREFIX)gcc
 CC  = $(TOOL_PREFIX)gcc
@@ -109,6 +131,10 @@ rebuild : clean all
 run : all
 	@echo "[`date "+%H:%M:%S"`] Running '$(EXEC)'..."
 	@$(EXEC)
+
+wine : all
+	@echo "[`date "+%H:%M:%S"`] Running '$(EXEC)' with WINE..."
+	@WINEPREFIX=~/.wine64 wine $(EXEC)
 
 tree :
 	@mkdir -p $(TGT_DIRS)

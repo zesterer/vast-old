@@ -10,17 +10,23 @@ namespace Vast
 		glm::ivec3 sz;
 
 	public:
-		Volume(glm::ivec3 size) : sz(size)
+		void set_size(glm::ivec3 size)
 		{
+			this->sz = size;
 			this->blocks.reserve(this->sz.x * this->sz.y * this->sz.z);
+		}
+
+		Volume(glm::ivec3 size = glm::ivec3(0, 0, 0))
+		{
+			this->set_size(size);
 		}
 
 		int get(glm::ivec3 p)
 		{
 			if (
-				p.x > 0 && p.x < this->sz.x &&
-				p.y > 0 && p.y < this->sz.y &&
-				p.z > 0 && p.z < this->sz.z
+				p.x >= 0 && p.x < this->sz.x &&
+				p.y >= 0 && p.y < this->sz.y &&
+				p.z >= 0 && p.z < this->sz.z
 			)
 				return this->blocks[p.x * this->sz.y * this->sz.z + p.y * this->sz.z + p.z];
 			else

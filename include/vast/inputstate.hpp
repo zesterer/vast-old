@@ -4,6 +4,9 @@
 // Library
 #include <glm/glm.hpp>
 
+// Standard
+#include <deque>
+
 namespace Vast
 {
 	class Window;
@@ -30,12 +33,23 @@ namespace Vast
 			MOVE_SCW       = 10,
 			MOVE_SCCW      = 11,
 
-			MAX = 12,
+			SWITCH_MODE    = 12,
+
+			MAX = 13,
+		};
+
+		struct KeyEvent
+		{
+			Key key;
+			bool pressed;
+
+			KeyEvent(Key key, bool pressed) : key(key), pressed(pressed) {}
 		};
 
 	private:
 		bool key_states[(size_t)Key::MAX];
 		glm::vec2 cursor_offset;
+		std::deque<KeyEvent> events;
 
 	protected:
 		void setKeyState(Key key, bool state) { this->key_states[(int)key] = state; }
@@ -44,6 +58,9 @@ namespace Vast
 	public:
 		bool getKeyState(Key key) const { return this->key_states[(int)key]; }
 		glm::vec2 getCursorOffset() const { return this->cursor_offset; }
+		const std::deque<KeyEvent>& getEvents() const { return this->events; }
+		void addEvent(KeyEvent e) { this->events.push_back(e); }
+		void reset() { this->events.clear(); }
 	};
 }
 

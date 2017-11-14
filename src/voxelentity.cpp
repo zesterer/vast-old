@@ -1,5 +1,9 @@
 // Vast
 #include <vast/voxelentity.hpp>
+#include <vast/log.hpp>
+
+// Standard
+#include <fstream>
 
 namespace Vast
 {
@@ -12,6 +16,39 @@ namespace Vast
 						this->vol.set(glm::ivec3(i, j, k), 1);
 					else
 						this->vol.set(glm::ivec3(i, j, k), 0);
+	}
+
+	VoxelEntity::VoxelEntity(std::string filename)
+	{
+		std::ifstream file(filename);
+		if (file.is_open())
+		{
+			int sx, sy, sz;
+			file >> sx;
+			file >> sy;
+			file >> sz;
+
+			this->vol.set_size(glm::ivec3(sx, sy, sz));
+
+			float offx, offy, offz;
+			file >> offx;
+			file >> offy;
+			file >> offz;
+
+			this->center = glm::vec3(offx, offy, offz);
+
+			for (size_t i = 0; !file.eof() && i < (size_t)(sx * sy * sz); i ++)
+			{
+				int v;
+				file >> v;
+
+				this->vol.set(glm::ivec3((i / (sy * sz)) % sx, (i / sz) % sy, i % sz), v);
+			}
+
+			file.close();
+		}
+
+		this->remesh();
 	}
 
 	bool VoxelEntity::event_handler(SceneObject& parent, SceneEvent event)

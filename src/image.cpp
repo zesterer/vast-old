@@ -3,7 +3,11 @@
 #include <vast/log.hpp>
 
 // Library
-#include <SOIL/SOIL.h>
+#ifdef __MINGW32__
+	#include <SOIL.h>
+#else
+	#include <SOIL/SOIL.h>
+#endif
 
 namespace Vast
 {
