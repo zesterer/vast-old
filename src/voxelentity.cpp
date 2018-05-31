@@ -10,10 +10,10 @@ namespace Vast
 	glm::vec3 voxel_colors[] = {
 		glm::vec3(0, 0, 0),       // 0
 		glm::vec3(1, 1, 1),       // 1
-		glm::vec3(1, 0, 0),       // 2
-		glm::vec3(0, 1, 0),       // 3
-		glm::vec3(0, 0, 1),       // 4
-		glm::vec3(1, 1, 0),       // 5
+		glm::vec3(1, 0.7, 0.7),   // 2
+		glm::vec3(0.7, 1, 0.7),   // 3
+		glm::vec3(0.7, 0.7, 1),   // 4
+		glm::vec3(1, 1, 0.7),     // 5
 		glm::vec3(0.2, 0.2, 0.2), // 6
 	};
 
@@ -181,31 +181,36 @@ namespace Vast
 		this->setModel(std::make_shared<Model>(mesh));
 	}
 
-	glm::vec3 VoxelEntity::tryCollide(glm::vec3 pos, glm::vec3 sz)
+	bool VoxelEntity::doesCollide(glm::vec3 pos, glm::vec3 sz)
 	{
-		for (int c = 0; c < 10; c ++)
-		{
-			glm::vec3 net = glm::vec3(0);
-			for (int i = pos.x; i < pos.x + sz.x; i ++)
-				for (int j = pos.y; j < pos.y + sz.y; j ++)
-					for (int k = pos.z; k < pos.z + sz.z; k ++)
-					{
-						if (this->vol.get(glm::ivec3(i + this->center.x, j + this->center.y, k + this->center.z)) == 0)
-							continue;
+		for (float i = pos.x; i <= pos.x + sz.x; i += 0.1f)
+			for (float j = pos.y; j <= pos.y + sz.y; j += 0.1f)
+				for (float k = pos.z; k <= pos.z + sz.z; k += 0.1f)
+				{
+					if (this->vol.get(glm::ivec3(
+						i + this->center.x - sz.x / 2,
+						j + this->center.y - sz.y / 2,
+						k + this->center.z - sz.z / 2
+					)) != 0)
+						return true;
+				}
+		return false;
+	}
 
-						if (this->vol.get(glm::ivec3(i + this->center.x, j + this->center.y, k + this->center.z)) != 0)
-							net += (pos + sz / 2.0f) - glm::vec3(i + 0.5f, j + 0.5f, k + 0.5f);
-					}
-
-			if (glm::length(net) == 0)
-				break;
-			else
-				pos.z += 0.025f; //glm::sign(net.z) * 0.025f;
-		}
-
+	glm::vec3 VoxelEntity::tryCollide(glm::vec3 pos, glm::vec3 tpos, glm::vec3 sz)
+	{
+		glm::vec3 offs[3] = {
+			glm::vec3(0, 0, 1),
+			glm::vec3(0, 1, 0),
+			glm::vec3(1, 0, 0),
+		};
+		
+		glm::vec3 diff = tpos - pos;
+		for (size_t j = 0; j < 100; j ++)
+			for (size_t i = 0; i < 3; i ++)
+				if (!this->doesCollide(pos + diff * offs[i] * 0.01f, sz))
+					pos += diff * offs[i] * 0.01f;
+		
 		return pos;
-
-		//pos += this->center;
-		//return this->vol.get(glm::ivec3(pos.x, pos.y, pos.z)) != 0;
 	}
 }

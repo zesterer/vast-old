@@ -16,12 +16,15 @@ namespace Vast
 		glm::vec3 vel;
 		glm::quat rot;
 
+		glm::vec3 scale = glm::vec3(1);
+
 		glm::mat4 mat;
 
 		void updateRelativeTo(glm::mat4 mat)
 		{
 			this->mat = glm::translate(mat, this->pos); // Position
 			this->mat *= glm::toMat4(this->ori);        // Orientation
+			this->mat = glm::scale(this->mat, this->scale);
 		}
 
 		void update()

@@ -26,7 +26,7 @@ EXEC_NAME = vast
 # Build type : 'release' or 'debug'
 BUILD_TYPE = release
 
-PLATFORM = win64
+PLATFORM = linux
 
 SRC_ROOT = $(abspath .)
 TGT_ROOT ?= $(SRC_ROOT)/build

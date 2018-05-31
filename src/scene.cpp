@@ -39,21 +39,19 @@ namespace Vast
 		skybox_shader = std::make_shared<Shader>(Shader::Type::SKYBOX);
 		skybox_shader->loadFiles("data/shaders/sky-vert.glsl", "data/shaders/sky-frag.glsl");
 
-		// Mesh craft_mesh("data/obj/craft.obj");
-		// craft_model = std::make_shared<Model>(craft_mesh);
-
-		Image craft_image("data/gfx/block.jpg");
-		craft_texture = std::make_shared<Texture>(craft_image);
-
 		Mesh skybox_mesh("data/obj/skybox.obj");
 		skybox_model = std::make_shared<Model>(skybox_mesh);
 
 		// Craft
 		{
+			Image craft_image("data/gfx/block.jpg");
+			craft_texture = std::make_shared<Texture>(craft_image);
+
 			craft_entity = std::make_shared<VoxelEntity>("data/vox/craft.vox");
-			this->root.addChild(craft_entity);
 			craft_entity->setTexture(craft_texture);
 			craft_entity->setShader(model_shader);
+
+			this->root.addChild(craft_entity);
 		}
 
 		// Rock
@@ -76,7 +74,7 @@ namespace Vast
 			this->root.addChild(rock);
 		}
 
-		this->camera->state.pos = glm::vec3(0, 0, 0);
+		this->camera->state.pos = glm::vec3(0, 0, 10);
 		craft_entity->addChild(this->camera);
 		//this->root.addChild(this->camera);
 
@@ -173,7 +171,10 @@ namespace Vast
 			if (inputstate.getKeyState(InputState::Key::MOVE_JUMP))
 				mov.z += 0.1f;
 
-			this->camera->state.pos = mov;
+			mov.z -= 0.05f;
+			
+			glm::vec3 off = glm::vec3(0, 0, 0.8);
+			this->camera->state.pos = craft_entity->tryCollide(this->camera->state.pos - off, mov - off, glm::vec3(0.6, 0.6, 1.9)) + off;
 		}
 
 		// Movement
@@ -206,8 +207,7 @@ namespace Vast
 			craft_entity->state.vel -= 0.1f * glm::normalize(craft_entity->state.vel) * glm::pow(glm::length(craft_entity->state.vel), 1.0f);
 
 		// Floor collisions
-		this->camera->state.pos.z -= 0.05f;
-		this->camera->state.pos = craft_entity->tryCollide(this->camera->state.pos - glm::vec3(0.5f, 0.5f, 2.0f), glm::vec3(1, 1, 1.8)) + glm::vec3(0.5f, 0.5f, 2.0f);
+		//this->camera->state.pos = craft_entity->tryCollide(this->camera->state.pos - glm::vec3(0, 0, 1.6), glm::vec3(0.6, 0.6, 1.8)) + glm::vec3(0, 0, 1.6);
 	}
 
 	void Scene::draw(Renderer& renderer)

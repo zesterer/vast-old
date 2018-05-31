@@ -1,0 +1,75 @@
+# Systems
+
+## Input
+- Input subsystem
+- Networking subsystem
+
+## Output
+- Rendering subsystem
+- Sound subsystem
+- Networking subsystem
+
+## Processing
+- Meta subsystem
+- Physics subsystem
+- AI subsystem
+- Menu subsystem
+- HUD subsystem
+- Event subsystem
+
+# Input Subsystem
+
+Handles inputs to the program from devices such as the keyboard, mouse, game controller, etc.
+
+# Networking Subsystem
+
+Notifies a server of client actions and receives incoming server actions.
+
+# Rendering Subsystem
+
+Renders the player's view of the world.
+
+# Sound Subsystem
+
+Manages sound effects, music, etc.
+
+# Meta Subsystem
+
+Handles object metadata (i.e: item properties, vehicle dynamics, etc.) and subtle gameplay details.
+
+# Physics Subsystem
+
+Simulates the physical world and any physics objects in it, run every frame.
+
+# AI Subsystem
+
+Handles entities that have AI and determines their decisions.
+
+# Menu Subsystem
+
+Handles menu logic when the game is within a menu.
+
+# HUD Subsystem
+
+Processes game events and update HUD elements accordingly. Also processes game inputs and determines whether they trigger HUD events.
+
+# Event Subsystem
+
+Handles central bus events and multiplexes them out to the relevant subsystems.
+
+# Entities
+- Particle (Dust, Exhaust, Gas, etc.)
+- Body (Asteroid, house, etc.)
+- Being (Player, NPC, Wildlife, etc.)
+- Vehicle (Spacecraft, Spacestation, Plane, Speeder, Bike, etc.)
+- Rounded Body (Planet, Star, Moon, etc.)
+- Meta Object (Bullet, Item, etc.)
+
+# Components
+- Exists -> Scene object
+- Static [Exists] -> Has a location, orientation, and scale within the world
+- Kinematic [Static] -> Has velocity, spin, and expansion
+- Dynamic [Kinematic] -> Has mass and moment
+- Volume [Exists] -> Has attributed voxel data
+- Modelled [Exists]-> Has an attributed model
+- ModelledVolume [Modelled, Volume] -> Has attributed voxel data that can be modelled
